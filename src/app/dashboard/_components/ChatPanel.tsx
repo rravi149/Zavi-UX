@@ -21,7 +21,6 @@ import {
   Check,
   ChevronDown,
   ChevronRight,
-  CircleCheck,
   CircleDot,
   CirclePlus,
   Copy,
@@ -1420,31 +1419,34 @@ export default function ChatPanel({
   return (
     <Panel>
       {doneToast && (
-        <div className="fixed top-4 right-4 z-50 w-96 max-w-[calc(100vw-2rem)] [animation:fade-in_200ms_ease-out]">
-          <div className="relative flex items-start gap-3 overflow-hidden rounded-2xl bg-white py-4 pr-4 pl-6 shadow-xl ring-1 ring-zinc-200">
+        <div className="fixed top-4 right-4 z-50 w-[420px] max-w-[calc(100vw-2rem)] [animation:fade-in_200ms_ease-out]">
+          <div className="relative flex items-start gap-5 rounded-[28px] bg-white p-7 shadow-2xl">
             <span
-              className="absolute top-0 left-0 h-full w-1.5 rounded-r-full bg-emerald-600"
+              className="absolute -top-2.5 -bottom-2.5 left-0 w-2 rounded-full bg-emerald-700"
               aria-hidden="true"
             />
-            <CircleCheck
-              className="mt-0.5 h-6 w-6 shrink-0 text-emerald-600"
-              aria-hidden="true"
-            />
-            <div className="min-w-0 flex-1">
-              <p className="text-[15px] font-semibold text-zinc-900">
+            <span className="flex h-12 w-12 shrink-0 items-center justify-center rounded-full border-[2.5px] border-emerald-700">
+              <Check
+                className="h-6 w-6 text-emerald-700"
+                strokeWidth={3}
+                aria-hidden="true"
+              />
+            </span>
+            <div className="min-w-0 flex-1 pt-0.5">
+              <p className="text-xl font-bold text-zinc-900">
                 Zavi&apos;s work is done
               </p>
-              <p className="mt-0.5 text-sm leading-relaxed text-zinc-600">
-                Your changes are ready for review in Task updates.
+              <p className="mt-1.5 text-base leading-relaxed text-zinc-500">
+                Your changes are ready for review in Task updates
               </p>
             </div>
             <button
               type="button"
               aria-label="Dismiss"
               onClick={() => setDoneToast(false)}
-              className="shrink-0 cursor-pointer text-zinc-400 transition-colors duration-200 hover:text-zinc-900"
+              className="shrink-0 cursor-pointer text-zinc-900 transition-opacity duration-200 hover:opacity-70"
             >
-              <X className="h-4 w-4" />
+              <X className="h-5 w-5" strokeWidth={2.5} />
             </button>
           </div>
         </div>

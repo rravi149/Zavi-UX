@@ -28,11 +28,13 @@ import {
 } from "lucide-react";
 import { IconButton, Panel, PanelHeader } from "./Panel";
 import { Dropdown } from "./Dropdown";
+import PostDrawer from "./PostDrawer";
 import type {
   ApprovalKind,
   ApprovalRequest,
   ApprovalReview,
   Plan,
+  SocialPost,
   Task,
   TaskSource,
 } from "./types";
@@ -43,6 +45,7 @@ type ChannelItem = {
   detail: string;
   taskId?: number;
   review: ApprovalReview;
+  post?: SocialPost;
 };
 
 type ChannelConfig = {
@@ -358,8 +361,18 @@ const channelConfigs: ChannelConfig[] = [
     items: [
       {
         id: 1,
-        title: "Thread: 5 dashboard patterns that convert",
-        detail: "Drafted from the gallery's most-viewed templates",
+        title: "Post: our SEO was quietly broken",
+        detail: "Drafted from this week's AI audit findings",
+        post: {
+          authorName: "Apna Tutor",
+          authorHandle: "apnatutor",
+          avatarColor: "#f97066",
+          verified: true,
+          text: "our seo was quietly broken and we had no idea\n\nan ai audit flagged geo issues we'd been ignoring for months\n\nturns out we were basically invisible in markets where couples actually search for this stuff\n\nfixing it now. will report back on whether it moves the needle",
+          whyThisWorks:
+            "The previous post introduced the AI CMO angle broadly; this post zooms into one specific, relatable founder pain point (broken SEO you didn't know about) discovered through that same process, giving it a fresh angle grounded in a real, concrete detail.",
+          stats: { replies: 24, reposts: 112, likes: "1.2K", views: "48K" },
+        },
         review: {
           why: "X Agent posts publicly from your account. A thread can't be edited after it goes out, so every draft waits for your approval.",
           plan: [
@@ -587,6 +600,10 @@ export default function ChannelPanel({
   const [showLocked, setShowLocked] = useState(true);
   const [dragId, setDragId] = useState<string | null>(null);
   const [overId, setOverId] = useState<string | null>(null);
+  const [postDrawer, setPostDrawer] = useState<{
+    channelId: string;
+    itemId: number;
+  } | null>(null);
 
   function itemsFor(channel: ChannelConfig): ChannelItem[] {
     if (channel.taskSource) {
@@ -628,6 +645,35 @@ export default function ChannelPanel({
       ...prev,
       [channelId]: (prev[channelId] ?? []).filter((item) => item.id !== itemId),
     }));
+  }
+
+  function updatePost(
+    channelId: string,
+    itemId: number,
+    patch: Partial<SocialPost>,
+  ) {
+    setStaticItems((prev) => ({
+      ...prev,
+      [channelId]: (prev[channelId] ?? []).map((item) =>
+        item.id === itemId && item.post
+          ? { ...item, post: { ...item.post, ...patch } }
+          : item,
+      ),
+    }));
+  }
+
+  function duplicatePostItem(channelId: string, item: ChannelItem) {
+    setStaticItems((prev) => {
+      const list = prev[channelId] ?? [];
+      const nextId = list.reduce((max, entry) => Math.max(max, entry.id), 0) + 1;
+      return {
+        ...prev,
+        [channelId]: [
+          ...list,
+          { ...item, id: nextId, title: `${item.title} (copy)` },
+        ],
+      };
+    });
   }
 
   function requestFor(
@@ -707,6 +753,15 @@ export default function ChannelPanel({
       </Panel>
     );
   }
+
+  const activeItem = postDrawer
+    ? (staticItems[postDrawer.channelId] ?? []).find(
+        (item) => item.id === postDrawer.itemId,
+      )
+    : undefined;
+  const activeChannel = postDrawer
+    ? channelConfigs.find((channel) => channel.id === postDrawer.channelId)
+    : undefined;
 
   return (
     <Panel>
@@ -920,7 +975,12 @@ export default function ChannelPanel({
                               <button
                                 type="button"
                                 onClick={() =>
-                                  onReview(requestFor(channel, item))
+                                  item.post
+                                    ? setPostDrawer({
+                                        channelId: channel.id,
+                                        itemId: item.id,
+                                      })
+                                    : onReview(requestFor(channel, item))
                                 }
                                 className="flex cursor-pointer items-center gap-1.5 rounded-lg bg-zinc-900 px-3 py-1.5 text-xs font-semibold text-white transition-colors duration-200 hover:bg-zinc-700"
                               >
@@ -928,7 +988,7 @@ export default function ChannelPanel({
                                   className="h-3.5 w-3.5"
                                   aria-hidden="true"
                                 />
-                                View and approve
+                                {item.post ? "Review post" : "View and approve"}
                               </button>
                               <button
                                 type="button"
@@ -959,6 +1019,30 @@ export default function ChannelPanel({
           );
         })}
       </ul>
+
+      {postDrawer && activeItem?.post && (
+        <PostDrawer
+          agentName={
+            activeChannel
+              ? activeChannel.name.replace(/ Agent$/, " Writer")
+              : "Writer"
+          }
+          post={activeItem.post}
+          onClose={() => setPostDrawer(null)}
+          onChange={(patch) =>
+            updatePost(postDrawer.channelId, postDrawer.itemId, patch)
+          }
+          onDuplicate={() => duplicatePostItem(postDrawer.channelId, activeItem)}
+          onMarkComplete={() => {
+            resolveStatic(postDrawer.channelId, postDrawer.itemId);
+            setPostDrawer(null);
+          }}
+          onPost={() => {
+            resolveStatic(postDrawer.channelId, postDrawer.itemId);
+            setPostDrawer(null);
+          }}
+        />
+      )}
     </Panel>
   );
 }

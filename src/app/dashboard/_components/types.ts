@@ -71,3 +71,20 @@ export type ApprovalRequest = ApprovalReview & {
   onApprove: () => void;
   onDismiss: () => void;
 };
+
+export type SocialPostStats = {
+  replies: number;
+  reposts: number;
+  likes: string;
+  views: string;
+};
+
+export type SocialPost = {
+  authorName: string;
+  authorHandle: string;
+  avatarColor: string;
+  verified: boolean;
+  text: string;
+  whyThisWorks: string;
+  stats: SocialPostStats;
+};
