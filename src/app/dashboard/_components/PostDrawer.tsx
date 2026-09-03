@@ -259,7 +259,7 @@ export default function PostDrawer({
             </div>
           </div>
 
-          <div className="mt-6 rounded-2xl border border-zinc-200 bg-white p-5 shadow-sm">
+          <div className="mt-6 rounded-2xl border border-zinc-200 bg-white p-5">
             <div className="flex items-center gap-2">
               <Lightbulb
                 className="h-4 w-4 shrink-0 text-amber-500"
