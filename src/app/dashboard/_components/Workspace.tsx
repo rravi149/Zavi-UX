@@ -15,6 +15,8 @@ import BuildPreview from "./BuildPreview";
 import { Drawer } from "./Drawer";
 import OnboardingDrawer from "./OnboardingDrawer";
 import GoalsDrawer from "./GoalsDrawer";
+import GrowthPlanPanel from "./GrowthPlanPanel";
+import GrowthChatPanel from "./GrowthChatPanel";
 import SettingsModal from "./SettingsModal";
 import BrainModal from "./BrainModal";
 import HelpDrawer from "./HelpDrawer";
@@ -139,6 +141,7 @@ const initialGoals: Goal[] = [
 const initialOrder: Record<Mode, PanelId[]> = {
   grow: ["sidebar", "chat", "channel", "analytics"],
   build: ["chat", "preview"],
+  growth: ["sidebar", "growthPlan", "growthChat"],
 };
 
 export default function Workspace() {
@@ -288,6 +291,8 @@ export default function Workspace() {
     analytics: collapsed.analytics ? "56px" : "minmax(0,1fr)",
     channel: collapsed.channel ? "56px" : "340px",
     preview: "minmax(0,1fr)",
+    growthPlan: "minmax(0,1fr)",
+    growthChat: "minmax(0,1fr)",
   };
   const isRail = (id: PanelId) =>
     (id === "sidebar" && collapsed.sidebar) ||
@@ -421,14 +426,18 @@ export default function Workspace() {
             }}
             activeGoals={activeGoals}
             onOpenDrawer={setDrawer}
+            onOpenGrowth={() => setMode("growth")}
+            onExitGrowth={() => {
+              if (mode === "growth") setMode("grow");
+            }}
             onOpenBrain={openBrain}
             onOpenSettings={openSettings}
-            threads={(mode === "grow" ? growThreads : buildThreads).map(
+            threads={(mode === "build" ? buildThreads : growThreads).map(
               (thread) => ({ id: thread.id, title: thread.title }),
             )}
-            activeThreadId={mode === "grow" ? activeGrowId : activeBuildId}
+            activeThreadId={mode === "build" ? activeBuildId : activeGrowId}
             onSelectThread={
-              mode === "grow" ? setActiveGrowId : setActiveBuildId
+              mode === "build" ? setActiveBuildId : setActiveGrowId
             }
           />
         );
@@ -501,6 +510,12 @@ export default function Workspace() {
             onUpgrade={upgrade}
           />
         );
+      case "growthPlan":
+        return (
+          <GrowthPlanPanel onOpenGoals={() => setDrawer("goals")} />
+        );
+      case "growthChat":
+        return <GrowthChatPanel />;
       default:
         return null;
     }

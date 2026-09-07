@@ -65,6 +65,8 @@ export default function SidebarPanel({
   onboarding,
   activeGoals,
   onOpenDrawer,
+  onOpenGrowth,
+  onExitGrowth,
   onOpenBrain,
   onOpenSettings,
   threads,
@@ -80,6 +82,8 @@ export default function SidebarPanel({
   onboarding: { done: number; total: number };
   activeGoals: number;
   onOpenDrawer: (kind: DrawerKind) => void;
+  onOpenGrowth: () => void;
+  onExitGrowth: () => void;
   onOpenBrain: () => void;
   onOpenSettings: (section?: SettingsSection) => void;
   threads: { id: number; title: string }[];
@@ -112,8 +116,8 @@ export default function SidebarPanel({
             </li>
             <li>
               <IconButton
-                label={`Goals, ${activeGoals} active`}
-                onClick={() => onOpenDrawer("goals")}
+                label={`Growth, ${activeGoals} active`}
+                onClick={onOpenGrowth}
               >
                 <Goal className="h-5 w-5" />
               </IconButton>
@@ -225,6 +229,7 @@ export default function SidebarPanel({
                 type="button"
                 aria-current={activeNav === "home" ? "page" : undefined}
                 onClick={() => {
+                  onExitGrowth();
                   setActiveNav("home");
                   document
                     .querySelector("main")
@@ -239,7 +244,10 @@ export default function SidebarPanel({
             <li>
               <button
                 type="button"
-                onClick={onNewChat}
+                onClick={() => {
+                  onExitGrowth();
+                  onNewChat();
+                }}
                 className="flex w-full cursor-pointer items-center gap-3 px-4 py-3 text-left text-[15px] font-medium text-zinc-900 transition-colors duration-200 hover:bg-zinc-50"
               >
                 <SquarePen className="h-5 w-5 shrink-0 text-zinc-800" />
@@ -250,7 +258,10 @@ export default function SidebarPanel({
               <button
                 type="button"
                 aria-current={activeNav === "meet" ? "page" : undefined}
-                onClick={() => setActiveNav("meet")}
+                onClick={() => {
+                  onExitGrowth();
+                  setActiveNav("meet");
+                }}
                 className="flex w-full cursor-pointer items-center gap-3 px-4 py-3 text-left text-[15px] font-medium text-zinc-900 transition-colors duration-200 hover:bg-zinc-50"
               >
                 <Video className="h-5 w-5 shrink-0 text-zinc-800" />
@@ -262,6 +273,7 @@ export default function SidebarPanel({
                 type="button"
                 aria-current={activeNav === "analytics" ? "page" : undefined}
                 onClick={() => {
+                  onExitGrowth();
                   setActiveNav("analytics");
                   scrollToPanel("analytics");
                 }}
@@ -276,6 +288,7 @@ export default function SidebarPanel({
                 type="button"
                 aria-current={activeNav === "channels" ? "page" : undefined}
                 onClick={() => {
+                  onExitGrowth();
                   setActiveNav("channels");
                   scrollToPanel("channel");
                 }}
@@ -290,6 +303,7 @@ export default function SidebarPanel({
                 type="button"
                 aria-current={activeNav === "messaging" ? "page" : undefined}
                 onClick={() => {
+                  onExitGrowth();
                   setActiveNav("messaging");
                   scrollToPanel("chat");
                 }}
@@ -302,7 +316,7 @@ export default function SidebarPanel({
             <li>
               <button
                 type="button"
-                onClick={() => onOpenDrawer("goals")}
+                onClick={onOpenGrowth}
                 className="flex w-full cursor-pointer items-center gap-3 px-4 py-3 text-left text-[15px] font-medium text-zinc-900 transition-colors duration-200 hover:bg-zinc-50"
               >
                 <TrendingUp className="h-5 w-5 shrink-0 text-zinc-800" />

@@ -1,6 +1,13 @@
 import type { ComponentType } from "react";
 
-export type PanelId = "sidebar" | "chat" | "analytics" | "channel" | "preview";
+export type PanelId =
+  | "sidebar"
+  | "chat"
+  | "analytics"
+  | "channel"
+  | "preview"
+  | "growthPlan"
+  | "growthChat";
 
 export type TaskSource = "build" | "grow";
 export type TaskStatus = "review" | "applied" | "dismissed";

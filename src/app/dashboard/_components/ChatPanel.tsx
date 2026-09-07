@@ -91,7 +91,7 @@ const mentionChannels = [
 /* Types                                                               */
 /* ------------------------------------------------------------------ */
 
-export type Mode = "grow" | "build";
+export type Mode = "grow" | "build" | "growth";
 export type ComposerSeed = { text: string; nonce: number };
 export type ChatPanelHandle = { startNewChat: () => void };
 
