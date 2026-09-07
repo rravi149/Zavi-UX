@@ -4,8 +4,24 @@
     {
       "name": "zavi-dev",
       "runtimeExecutable": "npm",
-      "runtimeArgs": ["run", "dev"],
+      "runtimeArgs": [
+        "run",
+        "dev"
+      ],
       "port": 3000
+    },
+    {
+      "name": "zavi-attach",
+      "url": "http://localhost:3000"
+    },
+    {
+      "name": "proto-static",
+      "runtimeExecutable": "node",
+      "runtimeArgs": [
+        "-e",
+        "const h=require('http'),f=require('fs'),d='/private/tmp/claude-501/-Users-ritesh-Desktop-Ritesh/6b66ce9e-7b16-4db2-8c75-ea06986dcc24/scratchpad';h.createServer((q,r)=>{const u=q.url.split('?')[0];const p=d+(u==='/'?'/zavi-mobile-prototype.html':u);f.readFile(p,(e,b)=>{if(e){r.writeHead(404);r.end();return;}r.writeHead(200,{'content-type':'text/html; charset=utf-8'});r.end(b);});}).listen(process.env.PORT||8765,'127.0.0.1')"
+      ],
+      "port": 8765
     }
   ]
 }

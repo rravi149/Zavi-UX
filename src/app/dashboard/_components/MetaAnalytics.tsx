@@ -2,6 +2,8 @@
 
 import { useMemo, useState, type ReactNode } from "react";
 import {
+  ArrowDownRight,
+  ArrowUpRight,
   Check,
   ChevronDown,
   CircleHelp,
@@ -15,6 +17,7 @@ import { buildPdf, downloadBlob } from "./pdf";
 import {
   adSets as initialAdSets,
   dailyAggregate,
+  formatCompact,
   formatDay,
   formatInt,
   formatPercent,
@@ -86,6 +89,44 @@ export default function MetaAnalytics({ range }: { range: string }) {
           <InsightTable insight={insights[subTab]} />
         )}
       </div>
+    </div>
+  );
+}
+
+function Delta({ value }: { value: number }) {
+  const up = value >= 0;
+  const Icon = up ? ArrowUpRight : ArrowDownRight;
+  return (
+    <span
+      className={`flex items-center gap-0.5 text-xs font-medium ${
+        up ? "text-emerald-700" : "text-red-600"
+      }`}
+    >
+      <Icon className="h-3 w-3" aria-hidden="true" />
+      {up ? "+" : ""}
+      {value.toFixed(1)}%
+    </span>
+  );
+}
+
+function StatCard({
+  label,
+  value,
+  delta,
+}: {
+  label: string;
+  value: string;
+  delta: number;
+}) {
+  return (
+    <div className="rounded-2xl border border-zinc-200 bg-white px-4 py-3">
+      <dt className="text-sm text-zinc-500">{label}</dt>
+      <dd className="mt-1 text-xl font-semibold text-zinc-900 tabular-nums">
+        {value}
+      </dd>
+      <dd className="mt-0.5">
+        <Delta value={delta} />
+      </dd>
     </div>
   );
 }
@@ -207,6 +248,27 @@ function MetaDashboard({ range }: { range: string }) {
   }));
   const total = sumAggregates(rows.map((row) => row.aggregate));
   const labels = days.map(formatDay);
+  const overallDaily = days.map((_, index) =>
+    sumAggregates(visible.map((strategy) => daily[strategy.id][index])),
+  );
+  const spendVsCac: ChartSeries[] = [
+    {
+      id: "spend",
+      label: "Spend ($)",
+      color: "#10b981",
+      values: overallDaily.map((a) => a.spend),
+      format: formatUsd,
+      tick: (v) => `$${Math.round(v)}`,
+    },
+    {
+      id: "cac",
+      label: "CAC ($)",
+      color: "#3b82f6",
+      values: overallDaily.map((a) => metrics.costPerPurchase.of(a)),
+      format: formatUsd2,
+      tick: (v) => `$${Math.round(v)}`,
+    },
+  ];
   const visibleGroups = groups.filter((group) =>
     visible.some((strategy) => strategy.group === group.id),
   );
@@ -299,7 +361,71 @@ function MetaDashboard({ range }: { range: string }) {
 
   return (
     <div>
-      <div className="flex flex-wrap items-center gap-2">
+      <section className="rounded-2xl border border-zinc-200 bg-white p-4">
+        <div className="flex flex-wrap items-center gap-2">
+          <h3 className="text-[15px] font-semibold text-zinc-900">
+            Last 7 days
+          </h3>
+          <span className="flex items-center gap-1.5 rounded-full bg-emerald-50 px-2 py-0.5 text-xs font-medium text-emerald-700">
+            <span
+              className="h-1.5 w-1.5 rounded-full bg-emerald-500"
+              aria-hidden="true"
+            />
+            Live
+          </span>
+        </div>
+        <dl className="mt-3 grid grid-cols-2 gap-2 @lg:grid-cols-4">
+          <StatCard
+            label="Amount spent"
+            value={formatUsd(total.spend)}
+            delta={76.3}
+          />
+          <StatCard
+            label="Bookings"
+            value={formatInt(total.purchases)}
+            delta={500}
+          />
+          <StatCard
+            label="CAC"
+            value={formatUsd(metrics.costPerPurchase.of(total))}
+            delta={-70.6}
+          />
+          <StatCard
+            label="ROAS (all)"
+            value={`${metrics.roas.of(total).toFixed(2)}x`}
+            delta={1.76}
+          />
+          <StatCard
+            label="Clicks"
+            value={formatCompact(total.clicks)}
+            delta={128.6}
+          />
+          <StatCard
+            label="Impressions"
+            value={formatCompact(total.impressions)}
+            delta={64.5}
+          />
+          <StatCard
+            label="CTR"
+            value={metrics.ctr.format(metrics.ctr.of(total))}
+            delta={1.34}
+          />
+          <StatCard
+            label="CPM"
+            value={metrics.cpm.format(metrics.cpm.of(total))}
+            delta={7.2}
+          />
+        </dl>
+
+        <h4 className="mt-6 text-[15px] font-semibold text-zinc-900">
+          Spend vs CAC
+        </h4>
+        <div className="mt-3">
+          <AreaChart labels={labels} series={spendVsCac} dualAxis />
+        </div>
+      </section>
+
+      <div className="mt-6 flex flex-wrap items-center gap-2">
         <h3 className="text-xl font-semibold text-zinc-900">Overview</h3>
         <div className="ml-auto flex items-center gap-2">
           <Dropdown

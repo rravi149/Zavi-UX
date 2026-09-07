@@ -16,6 +16,7 @@ import {
   type SetStateAction,
 } from "react";
 import {
+  AtSign,
   Brain,
   BrainCog,
   Check,
@@ -32,6 +33,7 @@ import {
   ImagePlus,
   Lightbulb,
   LoaderCircle,
+  Megaphone,
   Mic,
   Paperclip,
   Plus,
@@ -45,10 +47,45 @@ import {
   Trash2,
   X,
 } from "lucide-react";
+import {
+  SiGoogleads,
+  SiInstagram,
+  SiMeta,
+  SiReddit,
+  SiTiktok,
+  SiX,
+  SiYoutube,
+} from "react-icons/si";
+import { FaLinkedin } from "react-icons/fa6";
 import { IconButton, Panel, PanelHeader } from "./Panel";
 import { BrandMark, ZaviLogo } from "./Brand";
 import { Dropdown } from "./Dropdown";
 import type { Task, TaskSource } from "./types";
+
+const mentionChannels = [
+  { id: "meta-ads", name: "Meta Ads", color: "bg-indigo-600", icon: SiMeta },
+  { id: "google-ads", name: "Google Ads", color: "bg-amber-500", icon: SiGoogleads },
+  { id: "tiktok-ads", name: "TikTok Ads", color: "bg-zinc-900", icon: SiTiktok },
+  { id: "reddit-ads", name: "Reddit Ads", color: "bg-orange-600", icon: SiReddit },
+  {
+    id: "influencer-ads",
+    name: "Influencer Ads (TBD)",
+    color: "bg-emerald-500",
+    icon: Megaphone,
+  },
+  {
+    id: "seo-geo",
+    name: "SEO + GEO (AI search)",
+    color: "bg-sky-500",
+    icon: Sparkles,
+  },
+  { id: "linkedin", name: "LinkedIn", color: "bg-blue-600", icon: FaLinkedin },
+  { id: "reddit", name: "Reddit", color: "bg-orange-500", icon: SiReddit },
+  { id: "x", name: "X", color: "bg-zinc-900", icon: SiX },
+  { id: "instagram", name: "Instagram", color: "bg-pink-500", icon: SiInstagram },
+  { id: "tiktok", name: "TikTok", color: "bg-zinc-800", icon: SiTiktok },
+  { id: "youtube", name: "YouTube", color: "bg-red-600", icon: SiYoutube },
+];
 
 /* ------------------------------------------------------------------ */
 /* Types                                                               */
@@ -948,6 +985,10 @@ export default function ChatPanel({
   setActiveBuildId: (id: number) => void;
 }) {
   const [draft, setDraft] = useState("");
+  const [mentionOpen, setMentionOpen] = useState(false);
+  const [mentionQuery, setMentionQuery] = useState("");
+  const [mentionIndex, setMentionIndex] = useState(0);
+  const mentionStartRef = useRef<number | null>(null);
   const [attachments, setAttachments] = useState<string[]>([]);
   const [model, setModel] = useState(models[0]);
   const [planMode, setPlanMode] = useState(false);
@@ -1071,6 +1112,8 @@ export default function ChatPanel({
     setActiveGrowId,
     setBuildThreads,
     setActiveBuildId,
+    setDraft,
+    setAttachments,
   ]);
 
   useImperativeHandle(ref, () => ({ startNewChat }), [startNewChat]);
@@ -1146,6 +1189,7 @@ export default function ChatPanel({
         : `Attached ${files.length} files`);
     setDraft("");
     setAttachments([]);
+    setMentionOpen(false);
     if (mode === "grow") sendGrow(finalText, files);
     else sendBuild(finalText, files);
   }
@@ -1155,7 +1199,90 @@ export default function ChatPanel({
     send();
   }
 
+  const filteredMentions = mentionChannels.filter((channel) =>
+    channel.name.toLowerCase().includes(mentionQuery.toLowerCase()),
+  );
+
+  function handleDraftChange(event: ChangeEvent<HTMLTextAreaElement>) {
+    const value = event.target.value;
+    setDraft(value);
+    const cursor = event.target.selectionStart ?? value.length;
+    const upToCursor = value.slice(0, cursor);
+    const match = upToCursor.match(/(?:^|\s)@([^\s@]*)$/);
+    if (match) {
+      mentionStartRef.current = cursor - match[1].length - 1;
+      setMentionQuery(match[1]);
+      setMentionOpen(true);
+      setMentionIndex(0);
+    } else {
+      setMentionOpen(false);
+    }
+  }
+
+  function selectMention(channel: (typeof mentionChannels)[number]) {
+    const start = mentionStartRef.current;
+    const el = textareaRef.current;
+    if (start === null || !el) return;
+    const cursor = el.selectionStart ?? draft.length;
+    const before = draft.slice(0, start);
+    const after = draft.slice(cursor);
+    const insertion = `@${channel.name} `;
+    setDraft(`${before}${insertion}${after}`);
+    setMentionOpen(false);
+    setMentionQuery("");
+    requestAnimationFrame(() => {
+      el.focus();
+      const pos = before.length + insertion.length;
+      el.setSelectionRange(pos, pos);
+    });
+  }
+
+  function insertMentionTrigger() {
+    const el = textareaRef.current;
+    const cursor = el?.selectionStart ?? draft.length;
+    const before = draft.slice(0, cursor);
+    const after = draft.slice(cursor);
+    const needsSpace = before.length > 0 && !/\s$/.test(before);
+    const insertion = `${needsSpace ? " " : ""}@`;
+    const next = `${before}${insertion}${after}`;
+    setDraft(next);
+    mentionStartRef.current = before.length + insertion.length - 1;
+    setMentionQuery("");
+    setMentionOpen(true);
+    setMentionIndex(0);
+    requestAnimationFrame(() => {
+      el?.focus();
+      const pos = before.length + insertion.length;
+      el?.setSelectionRange(pos, pos);
+    });
+  }
+
   function handleKeyDown(event: KeyboardEvent<HTMLTextAreaElement>) {
+    if (mentionOpen && filteredMentions.length > 0) {
+      if (event.key === "ArrowDown") {
+        event.preventDefault();
+        setMentionIndex((index) => (index + 1) % filteredMentions.length);
+        return;
+      }
+      if (event.key === "ArrowUp") {
+        event.preventDefault();
+        setMentionIndex(
+          (index) =>
+            (index - 1 + filteredMentions.length) % filteredMentions.length,
+        );
+        return;
+      }
+      if (event.key === "Enter" || event.key === "Tab") {
+        event.preventDefault();
+        selectMention(filteredMentions[mentionIndex]);
+        return;
+      }
+      if (event.key === "Escape") {
+        event.preventDefault();
+        setMentionOpen(false);
+        return;
+      }
+    }
     if (event.key === "Enter" && !event.shiftKey) {
       event.preventDefault();
       send();
@@ -1250,8 +1377,40 @@ export default function ChatPanel({
   const composerForm = (
     <form
       onSubmit={handleSubmit}
-      className="rounded-3xl border border-zinc-200 bg-white p-4 shadow-sm"
+      className="relative rounded-3xl border border-zinc-200 bg-white p-4 shadow-sm"
     >
+      {mentionOpen && filteredMentions.length > 0 && (
+        <div className="absolute bottom-full left-0 z-20 mb-2 max-h-72 w-72 overflow-y-auto rounded-2xl border border-zinc-200 bg-white p-1.5 shadow-lg">
+          <ul>
+            {filteredMentions.map((channel, index) => {
+              const Icon = channel.icon;
+              return (
+                <li key={channel.id}>
+                  <button
+                    type="button"
+                    onMouseDown={(event) => {
+                      event.preventDefault();
+                      selectMention(channel);
+                    }}
+                    onMouseEnter={() => setMentionIndex(index)}
+                    className={`flex w-full cursor-pointer items-center gap-3 rounded-xl px-3 py-2 text-left text-[15px] text-zinc-900 transition-colors duration-150 ${
+                      index === mentionIndex ? "bg-zinc-100" : "hover:bg-zinc-50"
+                    }`}
+                  >
+                    <span
+                      className={`flex h-8 w-8 shrink-0 items-center justify-center rounded-full text-white ${channel.color}`}
+                      aria-hidden="true"
+                    >
+                      <Icon className="h-4 w-4" />
+                    </span>
+                    {channel.name}
+                  </button>
+                </li>
+              );
+            })}
+          </ul>
+        </div>
+      )}
       {attachments.length > 0 && (
         <ul className="mb-2 flex flex-wrap gap-1.5">
           {attachments.map((name) => (
@@ -1283,7 +1442,7 @@ export default function ChatPanel({
         id="chat-input"
         rows={1}
         value={draft}
-        onChange={(event) => setDraft(event.target.value)}
+        onChange={handleDraftChange}
         onKeyDown={handleKeyDown}
         placeholder={activeMode.placeholder}
         className="w-full resize-none bg-transparent text-[17px] leading-relaxed text-zinc-900 placeholder:text-zinc-500 focus:outline-none"
@@ -1340,6 +1499,9 @@ export default function ChatPanel({
               />
             )}
           </Dropdown>
+          <IconButton label="Mention a channel" onClick={insertMentionTrigger}>
+            <AtSign className="h-5 w-5" />
+          </IconButton>
           {mode === "build" && (
             <>
               <IconButton

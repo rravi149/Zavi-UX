@@ -72,7 +72,7 @@ export function Panel({
             }
           : undefined
       }
-      className={`group/panel flex h-[600px] min-h-0 shrink-0 flex-col overflow-hidden rounded-2xl border bg-white transition-[box-shadow,opacity,border-color] duration-200 xl:h-auto ${
+      className={`group/panel flex h-[600px] min-h-0 shrink-0 flex-col overflow-hidden rounded-2xl border bg-white transition-[box-shadow,opacity,border-color] duration-200 xl:h-full ${
         isOver ? "border-zinc-400 ring-2 ring-zinc-300" : "border-zinc-200"
       } ${isDragging ? "opacity-50" : ""} ${className}`}
     >

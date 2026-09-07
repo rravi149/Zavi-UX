@@ -111,7 +111,7 @@ export default function PostDrawer({
         role="dialog"
         aria-modal="true"
         aria-label={agentName}
-        className="absolute inset-y-0 right-0 flex w-full max-w-xl flex-col bg-white text-zinc-900 shadow-2xl [animation:drawer-in_220ms_ease-out]"
+        className="absolute inset-y-0 right-0 flex w-full max-w-xl flex-col overflow-hidden rounded-l-3xl bg-white text-zinc-900 shadow-2xl [animation:drawer-in_220ms_ease-out]"
       >
         <div className="flex shrink-0 flex-wrap items-center gap-3 border-b border-zinc-200 px-6 py-4">
           <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-zinc-900 text-sm font-bold text-white">

@@ -42,7 +42,7 @@ export function Drawer({
         role="dialog"
         aria-modal="true"
         aria-label={title}
-        className={`absolute inset-y-0 right-0 flex w-full ${width} flex-col bg-white shadow-2xl [animation:drawer-in_220ms_ease-out]`}
+        className={`absolute inset-y-0 right-0 flex w-full ${width} flex-col overflow-hidden rounded-l-3xl bg-white shadow-2xl [animation:drawer-in_220ms_ease-out]`}
       >
         <div className="flex shrink-0 items-center justify-between border-b border-zinc-200 px-6 py-4">
           <h2 className="text-lg font-semibold text-zinc-900">{title}</h2>

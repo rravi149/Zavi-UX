@@ -7,28 +7,38 @@ import {
   type KeyboardEvent,
 } from "react";
 import {
+  BotMessageSquare,
   Check,
   ChevronDown,
-  Clapperboard,
   Crown,
-  Eye,
-  GitPullRequest,
-  Globe,
   GripVertical,
-  Hammer,
   Lock,
   Megaphone,
   PanelRightClose,
   PanelRightOpen,
-  PenLine,
   Radio,
   SlidersHorizontal,
   Sparkles,
   X,
 } from "lucide-react";
+import {
+  SiGoogleads,
+  SiInstagram,
+  SiReddit,
+  SiTiktok,
+  SiX,
+  SiYoutube,
+  SiMeta,
+} from "react-icons/si";
+import { FaLinkedin } from "react-icons/fa6";
 import { IconButton, Panel, PanelHeader } from "./Panel";
 import { Dropdown } from "./Dropdown";
+import { Drawer } from "./Drawer";
 import PostDrawer from "./PostDrawer";
+import ChannelSummaryDrawer, {
+  type ChannelSummary,
+} from "./ChannelSummaryDrawer";
+import type { Tab as AnalyticsTab } from "./AnalyticsPanel";
 import type {
   ApprovalKind,
   ApprovalRequest,
@@ -48,6 +58,7 @@ type ChannelItem = {
   post?: SocialPost;
 };
 
+
 type ChannelConfig = {
   id: string;
   name: string;
@@ -60,52 +71,292 @@ type ChannelConfig = {
   emptyText: string;
   taskSource?: TaskSource;
   items: ChannelItem[];
+  summary?: ChannelSummary;
 };
 
 const channelConfigs: ChannelConfig[] = [
   {
-    id: "engineering",
-    name: "Engineering Agent",
-    color: "bg-zinc-800",
-    icon: Hammer,
+    id: "meta-ads",
+    name: "Meta Ads",
+    color: "bg-indigo-600",
+    icon: SiMeta,
     locked: false,
-    noun: ["change", "changes"],
-    verb: "ready to apply",
-    emptyText: "No changes waiting for review",
-    taskSource: "build",
+    noun: ["action", "actions"],
+    verb: "waiting",
+    emptyText: "Connect Meta Ads to get campaign ideas",
+    summary: {
+      headline:
+        "5 optimizations ready — approving all frees ~$85/day and lifts account-wide Purchase ROAS.",
+      points: [
+        "Pause 1 underperforming ad set (Sales campaign · Retargeting – Cart Abandoners)",
+        "Raise budget on 1 capped, high-ROAS ad set (Sales campaign · Acquisition – Prospecting)",
+        "Refresh creative in 1 fatigued ad set (Sales campaign · Retention – Winback)",
+        "Exclude recent purchasers from 3 prospecting ad sets",
+        "Turn on Advantage+ placements for 1 new launch campaign",
+      ],
+    },
+    items: [
+      {
+        id: 1,
+        title: "Pause “Retargeting – Cart Abandoners” ad set",
+        detail:
+          "Sales campaign · Cost per purchase is 2.4x the campaign average over the last 7 days",
+        review: {
+          why: "Pausing a live ad set stops delivery and spend immediately and can reset pixel/Conversions API learning, so Zavi asks before touching anything live in Ads Manager.",
+          plan: [
+            "Pause the ad set in Ads Manager (Sales campaign → Retargeting – Cart Abandoners)",
+            "Shift its $85/day budget to the higher-performing “Acquisition – Prospecting” ad set",
+            "Re-check cost per purchase after 3 days before permanently archiving it",
+          ],
+          impact: [
+            { label: "Cost per purchase", value: "$19.60" },
+            { label: "Campaign avg. cost/purchase", value: "$8.21" },
+            { label: "Daily budget freed", value: "$85" },
+          ],
+          risk: "Low. Pausing stops delivery only; the ad set, its audience, and learning data stay intact in Ads Manager and can be resumed anytime.",
+          undo: "Turn the ad set back on from Ads Manager or the Channel history.",
+          sources: [
+            "Ads Manager · Ad Set breakdown (last 7 days)",
+            "Campaign cost-per-purchase benchmark",
+          ],
+        },
+      },
+      {
+        id: 2,
+        title: "Raise budget on “Acquisition – Prospecting” ad set",
+        detail:
+          "Sales campaign · Purchase ROAS is 3.09x and delivery is capped by ad set budget, not audience size",
+        review: {
+          why: "Raising an ad set's daily budget changes live spend on your connected Meta ad account immediately, so every budget change waits for your approval.",
+          plan: [
+            "Raise the ad set's daily budget from $120 to $180 in Ads Manager",
+            "Monitor cost per purchase and frequency for 3 days",
+            "Auto-revert to $120 if cost per purchase rises above $12",
+          ],
+          impact: [
+            { label: "Purchase ROAS", value: "3.09x" },
+            { label: "Budget change", value: "+$60 / day" },
+            { label: "Est. extra purchases", value: "+6–9 / week" },
+          ],
+          risk: "Low. The ad set has held a stable cost per purchase for 14 days; the increase is capped and auto-monitored.",
+          undo: "Lower the ad set's daily budget back to $120 from Ads Manager.",
+          sources: [
+            "Ads Manager · Ad Set breakdown (last 14 days)",
+            "Delivery & budget pacing insights",
+          ],
+        },
+      },
+      {
+        id: 3,
+        title: "Refresh creative in “Retention – Winback” ad set",
+        detail:
+          "Sales campaign · Frequency has crossed 4.2 and link CTR dropped 38% week over week",
+        review: {
+          why: "Publishing new ad creative changes what your audience sees on Facebook and Instagram immediately, so Zavi drafts it for your review before it goes live in Ads Manager.",
+          plan: [
+            "Swap in the 3 new creative variants from the Build tab as new ads in this ad set",
+            "Keep the existing audience, placements, and budget unchanged",
+            "Watch link CTR and frequency for 5 days",
+          ],
+          preview: {
+            label: "New creative angle",
+            body: "\"Still thinking about it?\" carousel ad featuring the 3 most-viewed product shots from the last 30 days, with a 10% winback code.",
+          },
+          impact: [
+            { label: "Link CTR", value: "0.62%" },
+            { label: "Frequency", value: "4.2" },
+            { label: "Expected link CTR", value: "1.1–1.4%" },
+          ],
+          risk: "Low. Same audience, placements, and budget; only the ad creative changes.",
+          undo: "Turn off the new ads and re-enable the previous ad from the ad set's version history.",
+          sources: [
+            "Ads Manager · Ad breakdown (last 30 days)",
+            "Frequency & link CTR fatigue signals",
+          ],
+        },
+      },
+      {
+        id: 4,
+        title: "Exclude “Purchasers – Last 30 Days” from prospecting ad sets",
+        detail:
+          "Sales campaign · 12% of prospecting spend is reaching a custom audience that already converted",
+        review: {
+          why: "Editing audience targeting changes who your live ad sets reach on Meta, so Zavi confirms the exclusion with you before saving it in Ads Manager.",
+          plan: [
+            "Add the “Purchasers – Last 30 Days” custom audience (built from Pixel/Conversions API Purchase events) as an exclusion",
+            "Apply it to all 3 active prospecting ad sets in the Sales campaign",
+            "Re-check wasted spend after 7 days",
+          ],
+          impact: [
+            { label: "Wasted spend / week", value: "~$210" },
+            { label: "Audience overlap", value: "12%" },
+            { label: "Ad sets affected", value: "3" },
+          ],
+          risk: "Low. Exclusions only narrow reach; existing ad sets, creative, and performance history are unaffected.",
+          undo: "Remove the custom audience exclusion from each ad set's Audience settings.",
+          sources: [
+            "Ads Manager · Audience overlap report",
+            "Purchase events (Meta Pixel / Conversions API)",
+          ],
+        },
+      },
+      {
+        id: 5,
+        title: "Turn on Advantage+ placements for “Launch – Q4 Promo” ad set",
+        detail:
+          "Launch – Q4 Promo campaign · Manual placements are limiting delivery to 60% of daily budget pacing",
+        review: {
+          why: "Switching placements changes where your ads can show (Facebook Feed, Instagram Feed/Reels/Stories, Audience Network, etc.), so Zavi checks with you before changing it in Ads Manager.",
+          plan: [
+            "Switch the ad set from manual placements to Advantage+ placements",
+            "Keep budget and bid strategy unchanged",
+            "Compare delivery and cost per purchase after 5 days",
+          ],
+          impact: [
+            { label: "Current pacing", value: "60% of budget" },
+            { label: "Placements live", value: "2 of 6 (Feed, Stories)" },
+            { label: "Expected pacing", value: "95–100%" },
+          ],
+          risk: "Low. Advantage+ placements are reversible and are Meta's own delivery recommendation for this ad set.",
+          undo: "Switch back to manual placements from the ad set's Placements settings.",
+          sources: ["Ads Manager · Delivery insights"],
+        },
+      },
+    ],
+  },
+  {
+    id: "google-ads",
+    name: "Google Ads",
+    color: "bg-amber-500",
+    icon: SiGoogleads,
+    locked: true,
+    noun: ["action", "actions"],
+    verb: "waiting",
+    emptyText: "Connect Google Ads to get campaign ideas",
     items: [],
   },
   {
-    id: "zavi",
-    name: "Zavi Agent",
-    color: "bg-[#12203f]",
-    icon: GitPullRequest,
-    locked: false,
-    noun: ["pull request", "pull requests"],
-    verb: "ready to merge",
-    emptyText: "No pull requests waiting",
-    taskSource: "grow",
+    id: "tiktok-ads",
+    name: "TikTok Ads",
+    color: "bg-zinc-900",
+    icon: SiTiktok,
+    locked: true,
+    noun: ["action", "actions"],
+    verb: "waiting",
+    emptyText: "Connect TikTok Ads to get campaign ideas",
     items: [],
   },
   {
-    id: "influencer",
-    name: "X Influencer Agent",
+    id: "reddit-ads",
+    name: "Reddit Ads",
+    color: "bg-orange-600",
+    icon: SiReddit,
+    locked: true,
+    noun: ["action", "actions"],
+    verb: "waiting",
+    emptyText: "Connect Reddit Ads to get campaign ideas",
+    items: [],
+  },
+  {
+    id: "influencer-ads",
+    name: "Influencer Ads (TBD)",
     color: "bg-emerald-500",
     icon: Megaphone,
     locked: false,
-    noun: ["campaign", "campaigns"],
-    verb: "ready",
+    noun: ["action", "actions"],
+    verb: "waiting",
     emptyText: "Launch your first campaign (1000 influencers are waiting)",
     items: [],
   },
   {
-    id: "reddit",
-    name: "Reddit Agent",
-    color: "bg-orange-500",
-    glyph: "r/",
+    id: "seo-geo",
+    name: "SEO + GEO (AI search)",
+    color: "bg-sky-500",
+    icon: Sparkles,
     locked: true,
-    noun: ["opportunity", "opportunities"],
-    verb: "ready",
+    noun: ["action", "actions"],
+    verb: "waiting",
+    emptyText: "Rankings and citations look healthy",
+    items: [
+      {
+        id: 1,
+        title: "Add FAQ schema to the pricing page",
+        detail: "+2 positions expected for “dashboard template pricing”",
+        review: {
+          why: "This changes the pricing page code. Schema errors can drop rich results in search, so the change deploys only after you approve it.",
+          plan: [
+            "Add FAQPage JSON-LD with the six pricing questions",
+            "Validate with the Rich Results test",
+            "Open a pull request and deploy",
+          ],
+          preview: {
+            label: "Questions included",
+            body: "Is there a free plan?\nCan I use templates in client work?\nDo you offer refunds?\nWhat counts as a workspace?\nCan I cancel anytime?\nDo you offer team pricing?",
+          },
+          impact: [
+            { label: "Current rank", value: "#7" },
+            { label: "Expected rank", value: "#5" },
+            { label: "Extra clicks", value: "+120 / month" },
+          ],
+          risk: "Low. Markup only. Nothing visible changes on the page.",
+          undo: "Revert the pull request.",
+          sources: [
+            "Search Console (last 28 days)",
+            "Pricing page FAQ section",
+            "Google FAQ rich result guidelines",
+          ],
+        },
+      },
+      {
+        id: 2,
+        title: "ChatGPT doesn't cite Zavi for “dashboard UI kit”",
+        detail: "Publish a comparison page to earn the citation",
+        review: {
+          why: "Approving publishes a new public page on your site. New pages change your sitemap and how AI engines describe Zavi, so they always get a human review first.",
+          plan: [
+            "Create /compare/dashboard-ui-kits from the outline below",
+            "Add it to the sitemap and link it from the gallery",
+            "Re-check ChatGPT and Perplexity answers in 14 days",
+          ],
+          preview: {
+            label: "Page outline",
+            body: "Title: Dashboard UI kits compared (2026)\n1. What to look for in a dashboard UI kit\n2. Zavi vs. Tremor vs. Untitled UI vs. Tailwind UI\n3. Pricing and licensing table\n4. Which kit fits which team",
+          },
+          impact: [
+            { label: "Query volume", value: "2.9k / month" },
+            { label: "Cited today", value: "0 of 4 engines" },
+            { label: "Target", value: "Cited in 2 engines" },
+          ],
+          risk: "Medium. Comparison pages name competitors. The draft sticks to public facts and links every claim to its source.",
+          undo: "Unpublish the page from the Build tab. Cached AI answers can take a few weeks to update.",
+          sources: [
+            "ChatGPT and Perplexity answer audit (yesterday)",
+            "Competitor pricing pages",
+            "Search Console",
+          ],
+        },
+      },
+    ],
+  },
+  {
+    id: "linkedin",
+    name: "LinkedIn",
+    color: "bg-blue-600",
+    icon: FaLinkedin,
+    locked: true,
+    noun: ["action", "actions"],
+    verb: "waiting",
+    emptyText: "Set up your brand voice to get started",
+    items: [],
+  },
+  {
+    id: "reddit",
+    name: "Reddit",
+    color: "bg-orange-500",
+    icon: SiReddit,
+    locked: true,
+    noun: ["action", "actions"],
+    verb: "waiting",
     emptyText: "No new threads to join yet",
     items: [
       {
@@ -169,194 +420,13 @@ const channelConfigs: ChannelConfig[] = [
     ],
   },
   {
-    id: "geo",
-    name: "GEO Agent",
-    color: "bg-zinc-900",
-    icon: Sparkles,
-    locked: true,
-    noun: ["citation gap", "citation gaps"],
-    verb: "detected",
-    emptyText: "No citation gaps right now",
-    items: [
-      {
-        id: 1,
-        title: "ChatGPT doesn't cite Zavi for “dashboard UI kit”",
-        detail: "Publish a comparison page to earn the citation",
-        review: {
-          why: "Approving publishes a new public page on your site. New pages change your sitemap and how AI engines describe Zavi, so they always get a human review first.",
-          plan: [
-            "Create /compare/dashboard-ui-kits from the outline below",
-            "Add it to the sitemap and link it from the gallery",
-            "Re-check ChatGPT and Perplexity answers in 14 days",
-          ],
-          preview: {
-            label: "Page outline",
-            body: "Title: Dashboard UI kits compared (2026)\n1. What to look for in a dashboard UI kit\n2. Zavi vs. Tremor vs. Untitled UI vs. Tailwind UI\n3. Pricing and licensing table\n4. Which kit fits which team",
-          },
-          impact: [
-            { label: "Query volume", value: "2.9k / month" },
-            { label: "Cited today", value: "0 of 4 engines" },
-            { label: "Target", value: "Cited in 2 engines" },
-          ],
-          risk: "Medium. Comparison pages name competitors. The draft sticks to public facts and links every claim to its source.",
-          undo: "Unpublish the page from the Build tab. Cached AI answers can take a few weeks to update.",
-          sources: [
-            "ChatGPT and Perplexity answer audit (yesterday)",
-            "Competitor pricing pages",
-            "Search Console",
-          ],
-        },
-      },
-      {
-        id: 2,
-        title: "Perplexity lists competitors for “admin templates”",
-        detail: "Add structured data to the gallery pages",
-        review: {
-          why: "This edits the code of every gallery page. A structured-data mistake can hide rich results, so Zavi waits for your sign-off before deploying.",
-          plan: [
-            "Add Product and ItemList JSON-LD to 40 gallery pages",
-            "Validate every page with the Rich Results test",
-            "Open a pull request and deploy once checks pass",
-          ],
-          preview: {
-            label: "Schema snippet",
-            body: '{ "@type": "Product", "name": "Nimbus Analytics", "brand": "Zavi", "offers": { "price": "0", "priceCurrency": "USD" } }',
-          },
-          impact: [
-            { label: "Pages", value: "40" },
-            { label: "Query volume", value: "1.6k / month" },
-            { label: "Target", value: "Listed in Perplexity" },
-          ],
-          risk: "Low. The change adds markup only. Nothing visible changes.",
-          undo: "Revert the pull request.",
-          sources: [
-            "Perplexity answer audit",
-            "Gallery page templates",
-            "schema.org Product spec",
-          ],
-        },
-      },
-    ],
-  },
-  {
-    id: "ugc",
-    name: "UGC Videos Agent",
-    color: "bg-orange-500",
-    icon: Clapperboard,
-    locked: true,
-    noun: ["draft", "drafts"],
-    verb: "ready",
-    emptyText: "No drafts waiting",
-    items: [
-      {
-        id: 1,
-        title: "30s walkthrough: build a dashboard in 5 minutes",
-        detail: "Script and shot list ready for review",
-        review: {
-          why: "Approving books a creator and spends budget from your UGC plan. The deposit is non-refundable once filming starts, so this needs a human go-ahead.",
-          plan: [
-            "Send the brief to the matched creator (Maya R., 48k followers)",
-            "Receive a first cut within 5 days",
-            "Post the final cut here for a second approval before it goes live",
-          ],
-          preview: {
-            label: "Script",
-            body: "Hook (0–3s): “I built a full analytics dashboard in five minutes.”\nDemo (3–22s): pick the Nimbus template, drop in data, publish.\nCTA (22–30s): “Free templates at zavi.app.”",
-          },
-          impact: [
-            { label: "Budget", value: "$350" },
-            { label: "Expected views", value: "25k–40k" },
-            { label: "Est. signups", value: "40–70" },
-          ],
-          risk: "Medium. This spends budget and creator quality varies. The brief includes two revision rounds.",
-          undo: "Cancel before filming starts for a full refund.",
-          sources: [
-            "Creator marketplace match",
-            "Top-performing gallery flows",
-            "Brand voice skill",
-          ],
-        },
-      },
-    ],
-  },
-  {
-    id: "seo",
-    name: "SEO Agent",
-    color: "bg-sky-500",
-    icon: Globe,
-    locked: true,
-    noun: ["recommendation", "recommendations"],
-    verb: "ready",
-    emptyText: "Rankings look healthy",
-    items: [
-      {
-        id: 1,
-        title: "Add FAQ schema to the pricing page",
-        detail: "+2 positions expected for “dashboard template pricing”",
-        review: {
-          why: "This changes the pricing page code. Schema errors can drop rich results in search, so the change deploys only after you approve it.",
-          plan: [
-            "Add FAQPage JSON-LD with the six pricing questions",
-            "Validate with the Rich Results test",
-            "Open a pull request and deploy",
-          ],
-          preview: {
-            label: "Questions included",
-            body: "Is there a free plan?\nCan I use templates in client work?\nDo you offer refunds?\nWhat counts as a workspace?\nCan I cancel anytime?\nDo you offer team pricing?",
-          },
-          impact: [
-            { label: "Current rank", value: "#7" },
-            { label: "Expected rank", value: "#5" },
-            { label: "Extra clicks", value: "+120 / month" },
-          ],
-          risk: "Low. Markup only. Nothing visible changes on the page.",
-          undo: "Revert the pull request.",
-          sources: [
-            "Search Console (last 28 days)",
-            "Pricing page FAQ section",
-            "Google FAQ rich result guidelines",
-          ],
-        },
-      },
-      {
-        id: 2,
-        title: "Compress the hero images (1.2 MB → 300 KB)",
-        detail: "Improves LCP on mobile",
-        review: {
-          why: "This replaces image files on your homepage. Compression can visibly reduce quality, so review the before-and-after numbers before it ships.",
-          plan: [
-            "Re-encode 4 hero images as AVIF with a WebP fallback",
-            "Serve responsive sizes through next/image",
-            "Open a pull request and deploy",
-          ],
-          preview: {
-            label: "Before and after",
-            body: "hero-dashboard.png: 1.2 MB → 290 KB (AVIF)\nhero-mobile.png: 640 KB → 140 KB\nMobile LCP: 3.8s → est. 2.1s",
-          },
-          impact: [
-            { label: "Page weight", value: "−1.4 MB" },
-            { label: "Mobile LCP", value: "3.8s → 2.1s" },
-            { label: "Core Web Vitals", value: "Pass" },
-          ],
-          risk: "Low. Quality is set to 82, which is not visible at normal zoom.",
-          undo: "Revert the pull request to restore the original files.",
-          sources: [
-            "PageSpeed Insights (mobile)",
-            "Chrome UX Report",
-            "public/ folder",
-          ],
-        },
-      },
-    ],
-  },
-  {
     id: "x",
-    name: "X Agent",
+    name: "X",
     color: "bg-zinc-900",
-    glyph: "X",
+    icon: SiX,
     locked: false,
-    noun: ["idea", "ideas"],
-    verb: "ready",
+    noun: ["action", "actions"],
+    verb: "waiting",
     emptyText: "Nothing queued for X",
     items: [
       {
@@ -401,103 +471,45 @@ const channelConfigs: ChannelConfig[] = [
     ],
   },
   {
-    id: "articles",
-    name: "Articles Agent",
-    color: "bg-violet-500",
-    icon: PenLine,
+    id: "instagram",
+    name: "Instagram",
+    color: "bg-pink-500",
+    icon: SiInstagram,
     locked: true,
-    noun: ["topic", "topics"],
-    verb: "ready",
-    emptyText: "No topics suggested yet",
-    items: [
-      {
-        id: 1,
-        title: "How to design an analytics dashboard people actually use",
-        detail: "1,800 words, outline ready",
-        review: {
-          why: "Approving publishes a long-form article under your name on the Zavi blog. Articles are indexed within hours, so the outline and voice get a human check first.",
-          plan: [
-            "Write the full article from the outline below",
-            "Add 3 gallery screenshots and internal links",
-            "Publish to /blog and submit the URL for indexing",
-          ],
-          preview: {
-            label: "Outline",
-            body: "1. Why most dashboards get ignored\n2. Start with the decision, not the data\n3. Five layouts that work (with templates)\n4. Common mistakes: too many charts, no hierarchy\n5. A 30-minute dashboard audit checklist",
-          },
-          impact: [
-            { label: "Target keyword", value: "analytics dashboard design" },
-            { label: "Volume", value: "3.1k / month" },
-            { label: "Est. traffic", value: "400–600 / month" },
-          ],
-          risk: "Low. You can edit the draft in the Build tab before it publishes.",
-          undo: "Unpublish from the Build tab at any time.",
-          sources: [
-            "Keyword research export",
-            "Top 10 ranking pages",
-            "Brand voice skill",
-          ],
-        },
-      },
-    ],
+    noun: ["action", "actions"],
+    verb: "waiting",
+    emptyText: "No content queued for Instagram",
+    items: [],
   },
   {
-    id: "linkedin",
-    name: "LinkedIn Agent",
-    color: "bg-blue-600",
-    glyph: "in",
+    id: "tiktok",
+    name: "TikTok",
+    color: "bg-zinc-800",
+    icon: SiTiktok,
     locked: true,
-    noun: ["post", "posts"],
-    verb: "ready",
-    emptyText: "Set up your brand voice to get started",
+    noun: ["action", "actions"],
+    verb: "waiting",
+    emptyText: "No content queued for TikTok",
+    items: [],
+  },
+  {
+    id: "youtube",
+    name: "YouTube",
+    color: "bg-red-600",
+    icon: SiYoutube,
+    locked: true,
+    noun: ["action", "actions"],
+    verb: "waiting",
+    emptyText: "No videos queued for YouTube",
     items: [],
   },
 ];
 
-function taskReview(source: TaskSource, title: string): ApprovalReview {
-  if (source === "build") {
-    return {
-      why: "Applying changes edits the code of your live site. Zavi keeps every code change behind a human approval so nothing ships that you haven't reviewed.",
-      plan: [
-        "Apply the generated changes to the site",
-        "Rebuild the preview and run the lint, type, and build checks",
-        "Include the change in your next publish",
-      ],
-      preview: {
-        label: "Change summary",
-        body: `${title}\n\nFiles: src/app/page.tsx and 2 components\nChecks: lint, types, build — passing`,
-      },
-      impact: [
-        { label: "Files changed", value: "3" },
-        { label: "Lines", value: "+142 −18" },
-        { label: "Checks", value: "Passing" },
-      ],
-      risk: "Low. The change is limited to the sections named in the Build thread.",
-      undo: "Revert from the Build thread. The previous version is kept.",
-      sources: ["Build thread", "Current site code", "Your design tokens"],
-    };
-  }
-  return {
-    why: "Merging deploys this pull request to production. Zavi opens a pull request instead of pushing straight to main so you can review every change before it goes live.",
-    plan: [
-      "Merge the pull request into main",
-      "Trigger a production deploy (about two minutes)",
-      "Post the live link back in the Grow thread",
-    ],
-    preview: {
-      label: "Pull request",
-      body: `${title}\n\n3 files changed · +64 −12\nChecks: lint, types, build — passing`,
-    },
-    impact: [
-      { label: "Files changed", value: "3" },
-      { label: "Deploy time", value: "~2 min" },
-      { label: "Checks", value: "Passing" },
-    ],
-    risk: "Low. The pull request contains only the change described in the thread.",
-    undo: "Revert the merge commit from the Grow thread.",
-    sources: ["Grow thread", "Pull request diff", "Deploy checks"],
-  };
-}
+const analyticsTabForChannel: Partial<Record<string, AnalyticsTab>> = {
+  "meta-ads": "Meta Ads",
+  "google-ads": "Google Ads",
+  "seo-geo": "SEO",
+};
 
 function UpgradePill({
   plan,
@@ -577,6 +589,8 @@ export default function ChannelPanel({
   plan,
   onUpgrade,
   onReview,
+  onAskZavi,
+  onSelectChannel,
 }: {
   tasks: Task[];
   onApply: (id: number) => void;
@@ -586,6 +600,8 @@ export default function ChannelPanel({
   plan: Plan;
   onUpgrade: () => void;
   onReview: (request: ApprovalRequest) => void;
+  onAskZavi: (text: string) => void;
+  onSelectChannel?: (tab: AnalyticsTab) => void;
 }) {
   const [order, setOrder] = useState(() =>
     channelConfigs.map((channel) => channel.id),
@@ -604,6 +620,29 @@ export default function ChannelPanel({
     channelId: string;
     itemId: number;
   } | null>(null);
+  const [viewAllId, setViewAllId] = useState<string | null>(null);
+  const [connectedChannels, setConnectedChannels] = useState<string[]>(() =>
+    channelConfigs.map((channel) => channel.id).filter((id) => id !== "linkedin"),
+  );
+  const [toast, setToast] = useState<{
+    kind: "approve" | "reject";
+    title: string;
+  } | null>(null);
+
+  function notify(kind: "approve" | "reject", title: string) {
+    setToast({ kind, title });
+    window.setTimeout(() => setToast(null), 4000);
+  }
+
+  function isConnected(channel: ChannelConfig): boolean {
+    return connectedChannels.includes(channel.id);
+  }
+
+  function connectChannel(channelId: string) {
+    setConnectedChannels((prev) =>
+      prev.includes(channelId) ? prev : [...prev, channelId],
+    );
+  }
 
   function itemsFor(channel: ChannelConfig): ChannelItem[] {
     if (channel.taskSource) {
@@ -703,8 +742,14 @@ export default function ChannelPanel({
       title: item.title,
       detail:
         item.taskId !== undefined ? `Requested ${item.detail}` : item.detail,
-      onApprove: () => resolve(onApply),
-      onDismiss: () => resolve(onDismiss),
+      onApprove: () => {
+        resolve(onApply);
+        notify("approve", item.title);
+      },
+      onDismiss: () => {
+        resolve(onDismiss);
+        notify("reject", item.title);
+      },
     };
   }
 
@@ -762,6 +807,11 @@ export default function ChannelPanel({
   const activeChannel = postDrawer
     ? channelConfigs.find((channel) => channel.id === postDrawer.channelId)
     : undefined;
+
+  const viewAllChannel = viewAllId
+    ? channelConfigs.find((channel) => channel.id === viewAllId)
+    : undefined;
+  const viewAllItems = viewAllChannel ? itemsFor(viewAllChannel) : [];
 
   return (
     <Panel>
@@ -833,13 +883,21 @@ export default function ChannelPanel({
         </div>
       </PanelHeader>
 
-      <ul className="min-h-0 flex-1 space-y-2 overflow-y-auto p-3">
+      <ul className="min-h-0 flex-1 divide-y divide-zinc-100 overflow-y-auto">
         {channels.map((channel) => {
           const items = itemsFor(channel);
-          const isLocked = channel.locked && plan === "free";
+          const connected = isConnected(channel);
+          const isLocked = connected && channel.locked && plan === "free";
           const isExpanded = expanded === channel.id;
           const Icon = channel.icon;
           const noun = items.length === 1 ? channel.noun[0] : channel.noun[1];
+          const toggle = () => {
+            setExpanded((current) =>
+              current === channel.id ? null : channel.id,
+            );
+            const tab = analyticsTabForChannel[channel.id];
+            if (tab) onSelectChannel?.(tab);
+          };
           return (
             <li
               key={channel.id}
@@ -855,18 +913,31 @@ export default function ChannelPanel({
                 setDragId(null);
                 setOverId(null);
               }}
-              className={`rounded-2xl border bg-white transition-[box-shadow,opacity] duration-200 ${
+              className={`bg-white transition-[box-shadow,opacity] duration-200 ${
                 overId === channel.id && dragId !== channel.id
-                  ? "border-zinc-400 ring-2 ring-zinc-300"
-                  : "border-zinc-200"
+                  ? "ring-2 ring-inset ring-zinc-300"
+                  : ""
               } ${dragId === channel.id ? "opacity-50" : ""}`}
             >
-              <div className="group flex items-center gap-2 px-2 py-3">
+              <div
+                role="button"
+                tabIndex={0}
+                aria-expanded={isExpanded}
+                onClick={toggle}
+                onKeyDown={(event) => {
+                  if (event.key === "Enter" || event.key === " ") {
+                    event.preventDefault();
+                    toggle();
+                  }
+                }}
+                className="group relative flex cursor-pointer items-center gap-3 py-3 pr-4 pl-4 transition-colors duration-200 hover:bg-zinc-50"
+              >
                 <button
                   type="button"
                   draggable
                   aria-label={`Drag to reorder ${channel.name}. Use the arrow keys to move it.`}
                   title="Drag to reorder"
+                  onClick={(event) => event.stopPropagation()}
                   onDragStart={(event: DragEvent<HTMLButtonElement>) => {
                     event.dataTransfer.effectAllowed = "move";
                     event.dataTransfer.setData("text/plain", channel.id);
@@ -886,6 +957,7 @@ export default function ChannelPanel({
                     setOverId(null);
                   }}
                   onKeyDown={(event: KeyboardEvent<HTMLButtonElement>) => {
+                    event.stopPropagation();
                     if (event.key === "ArrowUp") {
                       event.preventDefault();
                       move(channel.id, -1);
@@ -895,7 +967,7 @@ export default function ChannelPanel({
                       move(channel.id, 1);
                     }
                   }}
-                  className="flex h-8 w-5 shrink-0 cursor-grab items-center justify-center rounded text-zinc-300 opacity-0 transition-opacity duration-200 group-hover:opacity-100 hover:text-zinc-600 focus-visible:opacity-100 active:cursor-grabbing"
+                  className="absolute top-1/2 left-0.5 flex h-6 w-5 -translate-y-1/2 cursor-grab items-center justify-center rounded-md text-zinc-300 opacity-0 transition-opacity duration-200 group-hover:opacity-100 hover:text-zinc-600 focus-visible:opacity-100 active:cursor-grabbing"
                 >
                   <GripVertical className="h-4 w-4" />
                 </button>
@@ -909,100 +981,135 @@ export default function ChannelPanel({
                     <span className="text-sm font-bold">{channel.glyph}</span>
                   )}
                 </span>
-                <button
-                  type="button"
-                  aria-expanded={isExpanded}
-                  onClick={() =>
-                    setExpanded((current) =>
-                      current === channel.id ? null : channel.id,
-                    )
-                  }
-                  className="min-w-0 flex-1 cursor-pointer text-left"
-                >
-                  <p className="text-sm font-bold tracking-wide text-zinc-900 uppercase">
-                    {channel.name}
-                  </p>
-                  <p className="truncate text-sm text-zinc-600">
-                    {subtitle(channel, items)}
-                  </p>
-                </button>
-                {isLocked && (
-                  <UpgradePill plan={plan} onUpgrade={onUpgrade} compact />
+                <span className="min-w-0 flex-1 truncate text-[15px] font-medium text-zinc-900">
+                  {channel.name}
+                </span>
+                {!connected && (
+                  <button
+                    type="button"
+                    onClick={(event) => {
+                      event.stopPropagation();
+                      connectChannel(channel.id);
+                    }}
+                    className="shrink-0 cursor-pointer rounded-lg bg-zinc-900 px-3 py-1.5 text-xs font-semibold text-white transition-colors duration-200 hover:bg-zinc-700"
+                  >
+                    Connect
+                  </button>
                 )}
-                <IconButton
-                  label={isExpanded ? "Collapse" : "Expand"}
-                  aria-expanded={isExpanded}
-                  className="h-8 w-8"
-                  onClick={() =>
-                    setExpanded((current) =>
-                      current === channel.id ? null : channel.id,
-                    )
-                  }
-                >
-                  <ChevronDown
-                    className={`h-4 w-4 transition-transform duration-200 ${
-                      isExpanded ? "rotate-180" : ""
-                    }`}
-                  />
-                </IconButton>
+                {items.length > 0 && (
+                  <button
+                    type="button"
+                    onClick={(event) => {
+                      event.stopPropagation();
+                      setViewAllId(channel.id);
+                    }}
+                    className="shrink-0 cursor-pointer rounded-lg border border-zinc-200 px-3 py-1.5 text-xs font-semibold text-zinc-700 transition-colors duration-200 hover:bg-zinc-100"
+                  >
+                    View all
+                  </button>
+                )}
+                <ChevronDown
+                  className={`h-4 w-4 shrink-0 text-zinc-400 transition-transform duration-200 ${
+                    isExpanded ? "rotate-180" : ""
+                  }`}
+                  aria-hidden="true"
+                />
               </div>
 
               {isExpanded && (
-                <div className="border-t border-zinc-100 px-4 py-3">
-                  {items.length === 0 ? (
-                    <p className="text-sm text-zinc-600">
-                      {channel.emptyText}. This agent posts here as soon as it
-                      has something for you.
-                    </p>
+                <div className="bg-zinc-50/60 px-4 py-3">
+                  <p className="mb-2 text-xs font-medium text-zinc-500">
+                    {subtitle(channel, items)}
+                  </p>
+                  {!connected ? (
+                    <div className="rounded-2xl border border-dashed border-zinc-300 bg-white px-4 py-5 text-center">
+                      <p className="text-sm text-zinc-600">
+                        {channel.name} isn&apos;t connected yet.
+                      </p>
+                      <button
+                        type="button"
+                        onClick={() => connectChannel(channel.id)}
+                        className="mt-3 cursor-pointer rounded-lg bg-zinc-900 px-4 py-2 text-sm font-semibold text-white transition-colors duration-200 hover:bg-zinc-700"
+                      >
+                        Connect {channel.name}
+                      </button>
+                    </div>
+                  ) : items.length === 0 ? (
+                    isLocked ? (
+                      <UpgradePill plan={plan} onUpgrade={onUpgrade} />
+                    ) : null
                   ) : (
                     <ul className="space-y-2">
                       {items.map((item) => (
                         <li
                           key={item.id}
-                          className="rounded-xl bg-zinc-50 px-3 py-2.5"
+                          className="rounded-2xl border border-zinc-200 bg-white p-3.5"
                         >
-                          <p className="text-sm font-medium text-zinc-900">
-                            {item.title}
-                          </p>
-                          <p className="text-xs text-zinc-500">{item.detail}</p>
+                          <div className="min-w-0">
+                            <p className="text-[15px] leading-snug font-semibold text-zinc-900">
+                              {item.title}
+                            </p>
+                            <p className="mt-0.5 truncate text-sm text-zinc-500">
+                              {channel.name} · {item.detail}
+                            </p>
+                          </div>
                           {isLocked ? (
-                            <p className="mt-2 flex items-center gap-1.5 text-xs text-zinc-500">
+                            <p className="mt-3 flex items-center gap-1.5 text-xs text-zinc-500">
                               <Lock className="h-3 w-3" aria-hidden="true" />
                               Upgrade to let this agent act on it
                             </p>
                           ) : (
-                            <div className="mt-2 flex gap-2">
-                              <button
-                                type="button"
-                                onClick={() =>
-                                  item.post
-                                    ? setPostDrawer({
+                            <>
+                              <div className="mt-3 flex flex-wrap items-center gap-2">
+                                <button
+                                  type="button"
+                                  aria-label={item.post ? "Review post" : "Mark as done"}
+                                  title={item.post ? "Review post" : "Mark as done"}
+                                  onClick={() => {
+                                    if (item.post) {
+                                      setPostDrawer({
                                         channelId: channel.id,
                                         itemId: item.id,
-                                      })
-                                    : onReview(requestFor(channel, item))
-                                }
-                                className="flex cursor-pointer items-center gap-1.5 rounded-lg bg-zinc-900 px-3 py-1.5 text-xs font-semibold text-white transition-colors duration-200 hover:bg-zinc-700"
-                              >
-                                <Eye
-                                  className="h-3.5 w-3.5"
-                                  aria-hidden="true"
-                                />
-                                {item.post ? "Review post" : "View and approve"}
-                              </button>
-                              <button
-                                type="button"
-                                onClick={() =>
-                                  item.taskId !== undefined
-                                    ? onDismiss(item.taskId)
-                                    : resolveStatic(channel.id, item.id)
-                                }
-                                className="flex cursor-pointer items-center gap-1.5 rounded-lg border border-zinc-200 bg-white px-3 py-1.5 text-xs font-semibold text-zinc-700 transition-colors duration-200 hover:bg-zinc-100"
-                              >
-                                <X className="h-3.5 w-3.5" aria-hidden="true" />
-                                Dismiss
-                              </button>
-                            </div>
+                                      });
+                                      return;
+                                    }
+                                    if (item.taskId !== undefined) {
+                                      onApply(item.taskId);
+                                    } else {
+                                      resolveStatic(channel.id, item.id);
+                                    }
+                                    notify("approve", item.title);
+                                  }}
+                                  className="flex h-10 w-10 shrink-0 cursor-pointer items-center justify-center rounded-lg border border-zinc-200 bg-white text-zinc-700 transition-colors duration-200 hover:bg-zinc-100"
+                                >
+                                  <Check className="h-4 w-4" aria-hidden="true" />
+                                </button>
+                                {!item.post && (
+                                  <button
+                                    type="button"
+                                    onClick={() =>
+                                      onReview(requestFor(channel, item))
+                                    }
+                                    className="cursor-pointer rounded-lg bg-zinc-900 px-4 py-2 text-sm font-semibold text-white transition-colors duration-200 hover:bg-zinc-700"
+                                  >
+                                    View/Fix
+                                  </button>
+                                )}
+                                {!item.post && (
+                                  <IconButton
+                                    label="Ask Zavi about this"
+                                    onClick={() =>
+                                      onAskZavi(
+                                        `About "${item.title}" — `,
+                                      )
+                                    }
+                                    className="ml-auto"
+                                  >
+                                    <BotMessageSquare className="h-5 w-5" />
+                                  </IconButton>
+                                )}
+                              </div>
+                            </>
                           )}
                         </li>
                       ))}
@@ -1022,11 +1129,7 @@ export default function ChannelPanel({
 
       {postDrawer && activeItem?.post && (
         <PostDrawer
-          agentName={
-            activeChannel
-              ? activeChannel.name.replace(/ Agent$/, " Writer")
-              : "Writer"
-          }
+          agentName={activeChannel ? `${activeChannel.name} Writer` : "Writer"}
           post={activeItem.post}
           onClose={() => setPostDrawer(null)}
           onChange={(patch) =>
@@ -1043,6 +1146,161 @@ export default function ChannelPanel({
           }}
         />
       )}
+
+      <Drawer
+        open={viewAllChannel !== undefined}
+        title={viewAllChannel ? `${viewAllChannel.name} — all actions` : "All actions"}
+        onClose={() => setViewAllId(null)}
+      >
+        {viewAllChannel && (
+          <ChannelSummaryDrawer
+            channelName={viewAllChannel.name}
+            channelColor={viewAllChannel.color}
+            icon={viewAllChannel.icon}
+            glyph={viewAllChannel.glyph}
+            summary={viewAllChannel.summary}
+            items={viewAllItems.map((item) => ({
+              id: item.id,
+              title: item.title,
+              detail: item.detail,
+            }))}
+            onApprove={(id) => {
+              const item = viewAllItems.find((entry) => entry.id === id);
+              if (!item) return;
+              if (item.taskId !== undefined) onApply(item.taskId);
+              else resolveStatic(viewAllChannel.id, item.id);
+              notify("approve", item.title);
+            }}
+            onReject={(id) => {
+              const item = viewAllItems.find((entry) => entry.id === id);
+              if (!item) return;
+              if (item.taskId !== undefined) onDismiss(item.taskId);
+              else resolveStatic(viewAllChannel.id, item.id);
+              notify("reject", item.title);
+            }}
+            onViewDetails={(id) => {
+              const item = viewAllItems.find((entry) => entry.id === id);
+              if (!item) return;
+              onReview(requestFor(viewAllChannel, item));
+            }}
+            onApproveAll={() => {
+              const count = viewAllItems.length;
+              viewAllItems.forEach((item) => {
+                if (item.taskId !== undefined) onApply(item.taskId);
+                else resolveStatic(viewAllChannel.id, item.id);
+              });
+              notify(
+                "approve",
+                `${count} ${viewAllChannel.name} action${count === 1 ? "" : "s"}`,
+              );
+              setViewAllId(null);
+            }}
+            onRejectAll={() => {
+              const count = viewAllItems.length;
+              viewAllItems.forEach((item) => {
+                if (item.taskId !== undefined) onDismiss(item.taskId);
+                else resolveStatic(viewAllChannel.id, item.id);
+              });
+              notify(
+                "reject",
+                `${count} ${viewAllChannel.name} action${count === 1 ? "" : "s"}`,
+              );
+              setViewAllId(null);
+            }}
+            onAskZavi={() => {
+              onAskZavi(`About ${viewAllChannel.name} — `);
+              setViewAllId(null);
+            }}
+          />
+        )}
+      </Drawer>
+
+      {toast && (
+        <div className="pointer-events-none fixed right-6 bottom-6 z-50 [animation:fade-in_200ms_ease-out]">
+          <div
+            className={`pointer-events-auto flex items-start gap-3 rounded-2xl border bg-white p-4 shadow-2xl ${
+              toast.kind === "approve" ? "border-emerald-200" : "border-zinc-200"
+            }`}
+          >
+            <span
+              className={`flex h-8 w-8 shrink-0 items-center justify-center rounded-full ${
+                toast.kind === "approve"
+                  ? "bg-emerald-100 text-emerald-700"
+                  : "bg-zinc-100 text-zinc-600"
+              }`}
+            >
+              {toast.kind === "approve" ? (
+                <Check className="h-4 w-4" aria-hidden="true" />
+              ) : (
+                <X className="h-4 w-4" aria-hidden="true" />
+              )}
+            </span>
+            <div className="min-w-0 max-w-xs">
+              <p className="text-sm font-semibold text-zinc-900">
+                {toast.kind === "approve" ? "Approved" : "Rejected"}
+              </p>
+              <p className="mt-0.5 text-sm text-zinc-600">
+                {toast.kind === "approve"
+                  ? `"${toast.title}" will be applied. You can undo it from the Channel history.`
+                  : `"${toast.title}" was dismissed. No changes were made.`}
+              </p>
+            </div>
+            <button
+              type="button"
+              aria-label="Dismiss notification"
+              onClick={() => setToast(null)}
+              className="pointer-events-auto shrink-0 cursor-pointer text-zinc-400 transition-colors duration-200 hover:text-zinc-700"
+            >
+              <X className="h-4 w-4" aria-hidden="true" />
+            </button>
+          </div>
+        </div>
+      )}
     </Panel>
   );
+}
+
+function taskReview(source: TaskSource, title: string): ApprovalReview {
+  if (source === "build") {
+    return {
+      why: "Applying changes edits the code of your live site. Zavi keeps every code change behind a human approval so nothing ships that you haven't reviewed.",
+      plan: [
+        "Apply the generated changes to the site",
+        "Rebuild the preview and run the lint, type, and build checks",
+        "Include the change in your next publish",
+      ],
+      preview: {
+        label: "Change summary",
+        body: `${title}\n\nFiles: src/app/page.tsx and 2 components\nChecks: lint, types, build — passing`,
+      },
+      impact: [
+        { label: "Files changed", value: "3" },
+        { label: "Lines", value: "+142 −18" },
+        { label: "Checks", value: "Passing" },
+      ],
+      risk: "Low. The change is limited to the sections named in the Build thread.",
+      undo: "Revert from the Build thread. The previous version is kept.",
+      sources: ["Build thread", "Current site code", "Your design tokens"],
+    };
+  }
+  return {
+    why: "Merging deploys this pull request to production. Zavi opens a pull request instead of pushing straight to main so you can review every change before it goes live.",
+    plan: [
+      "Merge the pull request into main",
+      "Trigger a production deploy (about two minutes)",
+      "Post the live link back in the Grow thread",
+    ],
+    preview: {
+      label: "Pull request",
+      body: `${title}\n\n3 files changed · +64 −12\nChecks: lint, types, build — passing`,
+    },
+    impact: [
+      { label: "Files changed", value: "3" },
+      { label: "Deploy time", value: "~2 min" },
+      { label: "Checks", value: "Passing" },
+    ],
+    risk: "Low. The pull request contains only the change described in the thread.",
+    undo: "Revert the merge commit from the Grow thread.",
+    sources: ["Grow thread", "Pull request diff", "Deploy checks"],
+  };
 }

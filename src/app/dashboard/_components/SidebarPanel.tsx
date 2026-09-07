@@ -10,18 +10,20 @@ import {
   EllipsisVertical,
   Goal,
   House,
-  Inbox,
   LayoutGrid,
   LifeBuoy,
   LogOut,
+  MessageSquare,
   Plug,
   PanelLeftOpen,
   PanelRight,
   Plus,
   ListChecks,
+  Radio,
   SquarePen,
   Settings,
-  Target,
+  TrendingUp,
+  Video,
   Wallet,
 } from "lucide-react";
 import { DragHandle, IconButton, Panel } from "./Panel";
@@ -49,15 +51,6 @@ function scrollToPanel(id: PanelId) {
     ?.scrollIntoView({ behavior: "smooth", block: "start", inline: "start" });
 }
 
-const previews = [
-  { text: "Hey, are you free tonight?" },
-  { text: "Just sent the files over!", highlighted: true },
-  { text: "Lol that's hilarious 😂" },
-  { text: "Can you review the PR before 5?" },
-  { text: "Sure — I'll ping you when it's done." },
-];
-
-const VISIBLE_PREVIEWS = 3;
 const accountItemClass =
   "flex w-full cursor-pointer items-center gap-2.5 rounded-lg px-2 py-2 text-left text-sm text-zinc-800 transition-colors duration-200 hover:bg-zinc-100";
 const userEmail = "ritesh@ritech.ai";
@@ -74,6 +67,9 @@ export default function SidebarPanel({
   onOpenDrawer,
   onOpenBrain,
   onOpenSettings,
+  threads,
+  activeThreadId,
+  onSelectThread,
 }: {
   workspace: string;
   workspaces: string[];
@@ -86,15 +82,14 @@ export default function SidebarPanel({
   onOpenDrawer: (kind: DrawerKind) => void;
   onOpenBrain: () => void;
   onOpenSettings: (section?: SettingsSection) => void;
+  threads: { id: number; title: string }[];
+  activeThreadId: number;
+  onSelectThread: (id: number) => void;
 }) {
-  const [activeNav, setActiveNav] = useState<"home" | "analytics" | "feed">(
-    "home",
-  );
-  const [chatOpen, setChatOpen] = useState(true);
-  const [showAll, setShowAll] = useState(false);
-  const visiblePreviews = showAll
-    ? previews
-    : previews.slice(0, VISIBLE_PREVIEWS);
+  const [activeNav, setActiveNav] = useState<
+    "home" | "meet" | "analytics" | "channels" | "messaging"
+  >("home");
+  const [historyOpen, setHistoryOpen] = useState(true);
 
   const progress = Math.round((onboarding.done / onboarding.total) * 100);
 
@@ -254,6 +249,17 @@ export default function SidebarPanel({
             <li>
               <button
                 type="button"
+                aria-current={activeNav === "meet" ? "page" : undefined}
+                onClick={() => setActiveNav("meet")}
+                className="flex w-full cursor-pointer items-center gap-3 px-4 py-3 text-left text-[15px] font-medium text-zinc-900 transition-colors duration-200 hover:bg-zinc-50"
+              >
+                <Video className="h-5 w-5 shrink-0 text-zinc-800" />
+                Meet
+              </button>
+            </li>
+            <li>
+              <button
+                type="button"
                 aria-current={activeNav === "analytics" ? "page" : undefined}
                 onClick={() => {
                   setActiveNav("analytics");
@@ -268,15 +274,29 @@ export default function SidebarPanel({
             <li>
               <button
                 type="button"
-                aria-current={activeNav === "feed" ? "page" : undefined}
+                aria-current={activeNav === "channels" ? "page" : undefined}
                 onClick={() => {
-                  setActiveNav("feed");
+                  setActiveNav("channels");
                   scrollToPanel("channel");
                 }}
                 className="flex w-full cursor-pointer items-center gap-3 px-4 py-3 text-left text-[15px] font-medium text-zinc-900 transition-colors duration-200 hover:bg-zinc-50"
               >
-                <Inbox className="h-5 w-5 shrink-0 text-zinc-800" />
-                Feed
+                <Radio className="h-5 w-5 shrink-0 text-zinc-800" />
+                Channels
+              </button>
+            </li>
+            <li>
+              <button
+                type="button"
+                aria-current={activeNav === "messaging" ? "page" : undefined}
+                onClick={() => {
+                  setActiveNav("messaging");
+                  scrollToPanel("chat");
+                }}
+                className="flex w-full cursor-pointer items-center gap-3 px-4 py-3 text-left text-[15px] font-medium text-zinc-900 transition-colors duration-200 hover:bg-zinc-50"
+              >
+                <MessageSquare className="h-5 w-5 shrink-0 text-zinc-800" />
+                Messaging
               </button>
             </li>
             <li>
@@ -285,8 +305,8 @@ export default function SidebarPanel({
                 onClick={() => onOpenDrawer("goals")}
                 className="flex w-full cursor-pointer items-center gap-3 px-4 py-3 text-left text-[15px] font-medium text-zinc-900 transition-colors duration-200 hover:bg-zinc-50"
               >
-                <Target className="h-5 w-5 shrink-0 text-zinc-800" />
-                <span className="flex-1">Goal</span>
+                <TrendingUp className="h-5 w-5 shrink-0 text-zinc-800" />
+                <span className="flex-1">Growth</span>
                 <span className="rounded-full bg-zinc-100 px-2.5 py-0.5 text-sm font-medium text-zinc-700">
                   {activeGoals} active
                 </span>
@@ -307,22 +327,22 @@ export default function SidebarPanel({
 
         <div className="border-t border-zinc-200" />
 
-        <section aria-label="Chat">
+        <section aria-label="History">
           <div className="flex items-center gap-2 px-3 py-2">
             <button
               type="button"
-              aria-expanded={chatOpen}
-              aria-controls="sidebar-chat-list"
-              onClick={() => setChatOpen((open) => !open)}
+              aria-expanded={historyOpen}
+              aria-controls="sidebar-history-list"
+              onClick={() => setHistoryOpen((open) => !open)}
               className="flex cursor-pointer items-center gap-3 rounded-lg px-1 py-1 text-xs font-semibold tracking-[0.12em] text-zinc-600 uppercase transition-colors duration-200 hover:text-zinc-900"
             >
               <ChevronDown
                 className={`h-4 w-4 transition-transform duration-200 ${
-                  chatOpen ? "rotate-180" : ""
+                  historyOpen ? "rotate-180" : ""
                 }`}
                 aria-hidden="true"
               />
-              Chat
+              History
             </button>
             <IconButton
               label="Start a new chat"
@@ -333,43 +353,31 @@ export default function SidebarPanel({
             </IconButton>
           </div>
 
-          {chatOpen && (
-            <ul id="sidebar-chat-list" className="pb-3">
-              <li className="relative">
-                <span
-                  className="absolute top-0 left-0 h-full w-1.5 rounded-r-full bg-zinc-900"
-                  aria-hidden="true"
-                />
-                <button
-                  type="button"
-                  aria-current="true"
-                  className="flex w-full cursor-pointer items-center gap-3 px-4 py-2 text-left transition-colors duration-200 hover:bg-zinc-50"
-                >
-                  <ZaviLogo size={44} className="rounded-xl" />
-                  <span className="text-[17px] text-zinc-900">Zavi</span>
-                </button>
-                <div className="pr-4 pl-[4.75rem]">
-                  <ul className="space-y-1">
-                    {visiblePreviews.map((preview) => (
-                      <li
-                        key={preview.text}
-                        className={`-mx-3 rounded-2xl px-3 py-1.5 text-[15px] leading-snug text-zinc-900 ${
-                          preview.highlighted ? "bg-zinc-100" : ""
-                        }`}
-                      >
-                        {preview.text}
-                      </li>
-                    ))}
-                  </ul>
+          {historyOpen && (
+            <ul id="sidebar-history-list" className="pb-3">
+              {threads.map((thread) => (
+                <li key={thread.id}>
                   <button
                     type="button"
-                    onClick={() => setShowAll((value) => !value)}
-                    className="mt-2 cursor-pointer text-[15px] text-zinc-400 transition-colors duration-200 hover:text-zinc-700"
+                    aria-current={
+                      thread.id === activeThreadId ? "page" : undefined
+                    }
+                    onClick={() => onSelectThread(thread.id)}
+                    className={`w-full cursor-pointer truncate px-4 py-1.5 text-left text-[15px] transition-colors duration-200 hover:bg-zinc-50 ${
+                      thread.id === activeThreadId
+                        ? "font-medium text-zinc-900"
+                        : "text-zinc-600"
+                    }`}
                   >
-                    {showAll ? "Show Less" : "Show More"}
+                    {thread.title}
                   </button>
-                </div>
-              </li>
+                </li>
+              ))}
+              {threads.length === 0 && (
+                <li className="px-4 py-1.5 text-sm text-zinc-500">
+                  No past chats yet.
+                </li>
+              )}
             </ul>
           )}
         </section>

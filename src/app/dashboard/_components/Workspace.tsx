@@ -9,7 +9,7 @@ import ChatPanel, {
   type ComposerSeed,
   type Mode,
 } from "./ChatPanel";
-import AnalyticsPanel from "./AnalyticsPanel";
+import AnalyticsPanel, { type Tab as AnalyticsTab } from "./AnalyticsPanel";
 import ChannelPanel from "./ChannelPanel";
 import BuildPreview from "./BuildPreview";
 import { Drawer } from "./Drawer";
@@ -137,7 +137,7 @@ const initialGoals: Goal[] = [
 ];
 
 const initialOrder: Record<Mode, PanelId[]> = {
-  grow: ["sidebar", "chat", "analytics", "channel"],
+  grow: ["sidebar", "chat", "channel", "analytics"],
   build: ["chat", "preview"],
 };
 
@@ -150,10 +150,12 @@ export default function Workspace() {
   const [order, setOrder] = useState(initialOrder);
   const [collapsed, setCollapsed] = useState({
     sidebar: false,
+    analytics: false,
     channel: false,
   });
   const [dragId, setDragId] = useState<PanelId | null>(null);
   const [overId, setOverId] = useState<PanelId | null>(null);
+  const [analyticsTab, setAnalyticsTab] = useState<AnalyticsTab>("Meta Ads");
   const [drawer, setDrawer] = useState<DrawerKind | null>(null);
   const [onboardingDone, setOnboardingDone] = useState(initialOnboardingDone);
   const [onboardingNotes, setOnboardingNotes] = useState<
@@ -227,12 +229,8 @@ export default function Workspace() {
     [],
   );
   const closeApproval = useCallback(() => setApproval(null), []);
-  const askForChanges = useCallback((request: ApprovalRequest) => {
-    setSeed({
-      text: `Before I approve "${request.title}", `,
-      nonce: Date.now(),
-    });
-    setApproval(null);
+  const askZavi = useCallback((text: string) => {
+    setSeed({ text, nonce: Date.now() });
   }, []);
 
   const reorder = useCallback(
@@ -287,12 +285,13 @@ export default function Workspace() {
   const baseWidths: Record<PanelId, string> = {
     sidebar: collapsed.sidebar ? "64px" : "320px",
     chat: mode === "build" ? "420px" : "minmax(0,1fr)",
-    analytics: "minmax(0,1fr)",
+    analytics: collapsed.analytics ? "56px" : "minmax(0,1fr)",
     channel: collapsed.channel ? "56px" : "340px",
     preview: "minmax(0,1fr)",
   };
   const isRail = (id: PanelId) =>
     (id === "sidebar" && collapsed.sidebar) ||
+    (id === "analytics" && collapsed.analytics) ||
     (id === "channel" && collapsed.channel);
   const columnFor = (id: PanelId) => {
     const custom = panelWidths[id];
@@ -424,6 +423,13 @@ export default function Workspace() {
             onOpenDrawer={setDrawer}
             onOpenBrain={openBrain}
             onOpenSettings={openSettings}
+            threads={(mode === "grow" ? growThreads : buildThreads).map(
+              (thread) => ({ id: thread.id, title: thread.title }),
+            )}
+            activeThreadId={mode === "grow" ? activeGrowId : activeBuildId}
+            onSelectThread={
+              mode === "grow" ? setActiveGrowId : setActiveBuildId
+            }
           />
         );
       case "chat":
@@ -450,7 +456,19 @@ export default function Workspace() {
           />
         );
       case "analytics":
-        return <AnalyticsPanel />;
+        return (
+          <AnalyticsPanel
+            collapsed={collapsed.analytics}
+            onToggleCollapse={() =>
+              setCollapsed((value) => ({
+                ...value,
+                analytics: !value.analytics,
+              }))
+            }
+            activeTab={analyticsTab}
+            onActiveTabChange={setAnalyticsTab}
+          />
+        );
       case "channel":
         return (
           <ChannelPanel
@@ -464,6 +482,13 @@ export default function Workspace() {
             plan={plan}
             onUpgrade={upgrade}
             onReview={openApproval}
+            onAskZavi={askZavi}
+            onSelectChannel={(tab) => {
+              setAnalyticsTab(tab);
+              if (collapsed.analytics) {
+                setCollapsed((value) => ({ ...value, analytics: false }));
+              }
+            }}
           />
         );
       case "preview":
@@ -486,7 +511,7 @@ export default function Workspace() {
       <main
         ref={mainRef}
         className="flex h-dvh flex-col gap-1 overflow-y-auto bg-[#ededed] p-1 text-zinc-900 xl:grid xl:overflow-hidden"
-        style={{ gridTemplateColumns: template }}
+        style={{ gridTemplateColumns: template, gridTemplateRows: "minmax(0, 1fr)" }}
       >
         {order[mode].map((id, index) => {
           const previous = order[mode][index - 1];
@@ -612,7 +637,7 @@ export default function Workspace() {
 
       <Drawer
         open={approval !== null}
-        title="Approval request"
+        title="Action details"
         onClose={closeApproval}
       >
         {approval && (
@@ -620,7 +645,7 @@ export default function Workspace() {
             key={approval.key}
             request={approval}
             onClose={closeApproval}
-            onAskForChanges={askForChanges}
+            onAskZavi={askZavi}
           />
         )}
       </Drawer>
