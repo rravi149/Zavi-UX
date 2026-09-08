@@ -46,6 +46,7 @@ import { confidenceTone, dailySeries } from "./metrics";
 import {
   applyCopy,
   channelHeadline,
+  copyOptions,
   metaItemCopy,
   type CopyOptionId,
 } from "./plainCopy";
@@ -774,6 +775,9 @@ export default function ChannelPanel({
   copyOption: CopyOptionId;
   onCopyOptionChange: (option: CopyOptionId) => void;
 }) {
+  const layout =
+    copyOptions.find((option) => option.id === copyOption)?.layout ?? "grid";
+
   const [order, setOrder] = useState(() =>
     channelConfigs.map((channel) => channel.id),
   );
@@ -1217,8 +1221,97 @@ export default function ChannelPanel({
                       <UpgradePill plan={plan} onUpgrade={onUpgrade} />
                     ) : null
                   ) : (
+                    <>
+                      {channel.id === "meta-ads" && (
+                        <div className="mb-2.5 flex flex-wrap items-center gap-1.5">
+                          {copyOptions.map((option) => {
+                            const active = option.id === copyOption;
+                            return (
+                              <button
+                                key={option.id}
+                                type="button"
+                                aria-pressed={active}
+                                title={option.hint}
+                                onClick={() => onCopyOptionChange(option.id)}
+                                className={`h-10 cursor-pointer rounded-lg px-3 text-sm font-semibold transition-colors duration-200 ${
+                                  active
+                                    ? "bg-zinc-900 text-white"
+                                    : "border border-zinc-200 bg-white text-zinc-700 hover:bg-zinc-100"
+                                }`}
+                              >
+                                {option.short}
+                              </button>
+                            );
+                          })}
+                        </div>
+                      )}
                     <ul className="space-y-2">
-                      {items.map((item) => (
+                      {items.map((item) =>
+                        channel.id === "meta-ads" && layout === "focus" ? (
+                          <li
+                            key={item.id}
+                            className="rounded-2xl border border-zinc-200 bg-white p-3"
+                          >
+                            <div className="flex items-center gap-3">
+                              {item.review.creative && (
+                                <div className="relative h-10 w-10 shrink-0 overflow-hidden rounded-lg bg-zinc-100">
+                                  <img
+                                    src={item.review.creative.image}
+                                    alt={item.review.creative.caption}
+                                    className="h-full w-full object-cover"
+                                  />
+                                  {item.review.creative.kind === "video" && (
+                                    <div className="absolute inset-0 flex items-center justify-center bg-black/25">
+                                      <Play className="h-3.5 w-3.5 fill-white text-white" aria-hidden="true" />
+                                    </div>
+                                  )}
+                                </div>
+                              )}
+                              <div className="min-w-0 flex-1">
+                                <p className="line-clamp-2 text-sm leading-snug font-semibold text-zinc-900">
+                                  {item.title}
+                                </p>
+                                {item.review.trend && (
+                                  <p className="mt-0.5 flex flex-wrap items-center gap-1 text-sm font-medium text-zinc-600">
+                                    <span className="text-zinc-400 line-through decoration-zinc-300">
+                                      {item.review.trend.before}
+                                    </span>
+                                    <ArrowRight className="h-3 w-3 shrink-0 text-zinc-400" aria-hidden="true" />
+                                    <span className="font-bold text-zinc-900">
+                                      {item.review.trend.after}
+                                    </span>
+                                  </p>
+                                )}
+                              </div>
+                            </div>
+                            {!isLocked && (
+                              <div className="mt-2.5 flex items-center gap-2">
+                                <button
+                                  type="button"
+                                  onClick={() => {
+                                    if (item.taskId !== undefined) {
+                                      onApply(item.taskId);
+                                    } else {
+                                      resolveStatic(channel.id, item.id);
+                                    }
+                                    notify("approve", item.title);
+                                  }}
+                                  className="flex h-10 flex-1 cursor-pointer items-center justify-center gap-1.5 rounded-lg bg-zinc-900 px-3 text-sm font-semibold text-white transition-colors duration-200 hover:bg-zinc-700"
+                                >
+                                  <Check className="h-4 w-4" aria-hidden="true" />
+                                  {item.review.actionLabel ?? "Approve"}
+                                </button>
+                                <button
+                                  type="button"
+                                  onClick={() => onReview(requestFor(channel, item))}
+                                  className="shrink-0 cursor-pointer px-1 text-sm font-medium text-zinc-600 underline underline-offset-4 transition-colors duration-200 hover:text-zinc-900"
+                                >
+                                  Details
+                                </button>
+                              </div>
+                            )}
+                          </li>
+                        ) : (
                         <li
                           key={item.id}
                           className="rounded-2xl border border-zinc-200 bg-white p-3.5"
@@ -1335,8 +1428,10 @@ export default function ChannelPanel({
                             </>
                           )}
                         </li>
-                      ))}
+                        ),
+                      )}
                     </ul>
+                    </>
                   )}
                   {isLocked && items.length > 0 && (
                     <p className="mt-3 text-sm text-zinc-500">

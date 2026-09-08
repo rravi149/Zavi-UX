@@ -5,6 +5,8 @@ export type CopyOptionId = "direct" | "conversational";
 export type CopyOption = {
   id: CopyOptionId;
   label: string;
+  /** Short form for tight columns like the channel list. */
+  short: string;
   hint: string;
   /** "grid" lays all actions out side by side. "focus" walks through them one at a time. */
   layout: "grid" | "focus";
@@ -19,12 +21,14 @@ export const copyOptions: CopyOption[] = [
   {
     id: "direct",
     label: "Option 1 · Straight talk",
+    short: "Straight talk",
     hint: "Every change side by side, with the workings shown on each card.",
     layout: "grid",
   },
   {
     id: "conversational",
     label: "Option 2 · Ask me first",
+    short: "Ask me first",
     hint: "One decision at a time, with just the number that matters.",
     layout: "focus",
   },
