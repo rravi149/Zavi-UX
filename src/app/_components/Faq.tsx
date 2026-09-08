@@ -1,48 +1,80 @@
 const faqs = [
   {
-    question: "What frameworks are the templates built with?",
-    answer:
-      "Every template is available in React and Tailwind CSS, with most also offered in Vue and plain HTML. You can copy the markup directly or import the component into your codebase.",
+    q: "What does Zavi do for my business?",
+    a: "Zavi connects research, planning, content, and measurement in one growth workflow. You set the goal and review the work.",
   },
   {
-    question: "Can I customize the colors and typography?",
-    answer:
-      "Yes. Each template ships with a design token file for color, spacing, radius, and type — change the tokens once and the whole layout restyles to match your brand.",
+    q: "How does Zavi research my website?",
+    a: "The research flow brings together product information, audience context, competitors, brand voice, and content priorities.",
   },
   {
-    question: "Do you offer Figma files?",
-    answer:
-      "Pro and Team plans include the matching Figma file for every template, kept in sync with the coded version.",
+    q: "What is the difference between the plans?",
+    a: "See the pricing page for plan details and usage limits. Choose a plan based on the work you need.",
   },
   {
-    question: "Can I cancel anytime?",
-    answer:
-      "Yes, subscriptions are month-to-month with no lock-in. Downgrading keeps access to anything you've already exported.",
+    q: "How does Reddit growth work?",
+    a: "The workflow finds relevant discussions and prepares helpful reply drafts. You review the context and wording before posting.",
+  },
+  {
+    q: "What SEO work can I plan?",
+    a: "Plan keyword research, content briefs, landing page updates, and technical improvements. Review recommendations against your site data.",
+  },
+  {
+    q: "What is GEO?",
+    a: "GEO means generative engine optimization. It focuses on how your business appears in AI-generated answers and their cited sources.",
+  },
+  {
+    q: "How long does it take to see results?",
+    a: "Timing depends on your channel, starting point, and execution. Measure progress against a clear baseline; results are not guaranteed.",
+  },
+  {
+    q: "Does Zavi publish content automatically?",
+    a: "Publishing depends on the connected tool, its permissions, and your approval settings. Review the destination and content before approving an action.",
+  },
+  {
+    q: "Can I change or cancel my plan?",
+    a: "Check the current pricing and billing terms for plan changes, cancellation, and when changes take effect.",
+  },
+  {
+    q: "Can I use Zavi in Slack and Microsoft Teams?",
+    a: "Yes. Connect your workspace from Zavi's integration settings, then bring Zavi into the conversations where you need it.",
   },
 ];
 
 export default function Faq() {
   return (
-    <section id="faq" className="bg-surface px-4 py-20 md:py-28">
-      <div className="mx-auto max-w-3xl">
-        <h2 className="text-center text-3xl font-extrabold tracking-tight text-foreground sm:text-4xl">
-          Frequently asked questions
-        </h2>
+    <section className="border-t border-border">
+      <div className="mx-auto max-w-6xl px-6 py-16">
+        <div className="grid gap-12 md:grid-cols-[0.7fr_1.3fr]">
+          <div>
+            <p className="text-[11px] font-extrabold tracking-[0.13em] text-[#46658a] uppercase">
+              A few useful answers
+            </p>
+            <h2 className="mt-3 text-3xl leading-tight font-bold tracking-tight text-foreground sm:text-4xl">
+              Before you
+              <br />
+              get started.
+            </h2>
+          </div>
 
-        <div className="mt-12 divide-y divide-border rounded-2xl border border-border bg-background">
-          {faqs.map((f) => (
-            <details key={f.question} className="group p-6">
-              <summary className="flex cursor-pointer list-none items-center justify-between text-sm font-semibold text-foreground marker:content-none">
-                {f.question}
-                <span className="ml-4 shrink-0 text-lg leading-none text-muted transition-transform duration-200 group-open:rotate-45">
-                  +
-                </span>
-              </summary>
-              <p className="mt-3 text-sm leading-relaxed text-muted">
-                {f.answer}
-              </p>
-            </details>
-          ))}
+          <div>
+            {faqs.map((item) => (
+              <details key={item.q} className="group border-b border-border">
+                <summary className="relative cursor-pointer list-none py-5 pr-8 text-sm leading-relaxed font-medium text-foreground">
+                  {item.q}
+                  <span className="absolute top-5 right-0 text-lg text-muted group-open:hidden">
+                    +
+                  </span>
+                  <span className="absolute top-5 right-0 hidden text-lg text-muted group-open:inline">
+                    −
+                  </span>
+                </summary>
+                <p className="pr-5 pb-6 text-xs leading-relaxed text-muted">
+                  {item.a}
+                </p>
+              </details>
+            ))}
+          </div>
         </div>
       </div>
     </section>

@@ -1,29 +1,33 @@
-import Navbar from "./_components/Navbar";
-import Hero from "./_components/Hero";
-import LogoCloud from "./_components/LogoCloud";
-import Features from "./_components/Features";
-import TemplateGallery from "./_components/TemplateGallery";
-import Testimonials from "./_components/Testimonials";
-import Pricing from "./_components/Pricing";
+import ZaviNavbar from "./_components/ZaviNavbar";
+import ZaviHero from "./_components/ZaviHero";
+import StorySection from "./_components/StorySection";
+import ResearchSection from "./_components/ResearchSection";
+import AgentsSection from "./_components/AgentsSection";
+import HowItWorks from "./_components/HowItWorks";
+import ChatPlatformSection from "./_components/ChatPlatformSection";
+import IntegrationsSection from "./_components/IntegrationsSection";
+import UseCasesSection from "./_components/UseCasesSection";
 import Faq from "./_components/Faq";
 import CtaBanner from "./_components/CtaBanner";
-import Footer from "./_components/Footer";
+import ZaviFooter from "./_components/ZaviFooter";
 
 export default function Home() {
   return (
     <>
-      <Navbar />
+      <ZaviNavbar />
       <main className="flex-1">
-        <Hero />
-        <LogoCloud />
-        <Features />
-        <TemplateGallery />
-        <Testimonials />
-        <Pricing />
+        <ZaviHero />
+        <StorySection />
+        <ResearchSection />
+        <AgentsSection />
+        <HowItWorks />
+        <ChatPlatformSection />
+        <IntegrationsSection />
+        <UseCasesSection />
         <Faq />
         <CtaBanner />
       </main>
-      <Footer />
+      <ZaviFooter />
     </>
   );
 }

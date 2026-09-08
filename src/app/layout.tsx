@@ -9,13 +9,14 @@ const plusJakarta = Plus_Jakarta_Sans({
 });
 
 export const metadata: Metadata = {
-  title: "Zavi — Dashboard design ideas, ready to ship",
+  title: "Zavi, the growth agent that finds the constraint and proves the lift",
   description:
-    "Browse hundreds of dashboard templates and UI kits for SaaS, analytics, and admin panels. Find the layout you need and start building in minutes.",
+    "Tell Zavi the number you want to move. Zavi works out what is holding it back, does the work, and shows you what moved and why.",
   openGraph: {
-    title: "Zavi — Dashboard design ideas, ready to ship",
+    title:
+      "Zavi, the growth agent that finds the constraint and proves the lift",
     description:
-      "Browse hundreds of dashboard templates and UI kits for SaaS, analytics, and admin panels.",
+      "Tell Zavi the number you want to move. Zavi works out what is holding it back, does the work, and shows you what moved and why.",
     type: "website",
   },
 };
