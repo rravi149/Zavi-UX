@@ -19,7 +19,7 @@ import ChatPanel, {
 import AnalyticsPanel, { type Tab as AnalyticsTab } from "./AnalyticsPanel";
 import ChannelPanel from "./ChannelPanel";
 import BuildPreview from "./BuildPreview";
-import { Drawer } from "./Drawer";
+import { ChannelBadge, Drawer } from "./Drawer";
 import OnboardingDrawer from "./OnboardingDrawer";
 import GoalsDrawer from "./GoalsDrawer";
 import GrowthPlanPanel from "./GrowthPlanPanel";
@@ -765,6 +765,16 @@ export default function Workspace() {
       <Drawer
         open={approval !== null}
         title="Action details"
+        badge={
+          approval && (
+            <ChannelBadge
+              name={approval.agent.name}
+              color={approval.agent.color}
+              icon={approval.agent.icon}
+              glyph={approval.agent.glyph}
+            />
+          )
+        }
         onClose={closeApproval}
         width={approvalExpanded ? "max-w-[min(80vw,1280px)]" : "max-w-2xl"}
         expanded={approvalExpanded}

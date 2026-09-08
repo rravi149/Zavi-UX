@@ -151,11 +151,20 @@ export function formatChange(before: number | null, after: number | null): strin
 
 export function confidenceTone(label: string): { badge: string; dot: string } {
   const text = label.toLowerCase();
-  if (text.includes("high")) {
-    return { badge: "bg-emerald-50 text-emerald-700", dot: "bg-emerald-500" };
-  }
-  if (text.includes("risk") || text.includes("low")) {
+  if (
+    text.includes("risk") ||
+    text.includes("low") ||
+    text.includes("not enough") ||
+    text.includes("too early")
+  ) {
     return { badge: "bg-red-50 text-red-700", dot: "bg-red-500" };
+  }
+  if (
+    text.includes("high") ||
+    text.includes("strong") ||
+    text.includes("confident")
+  ) {
+    return { badge: "bg-emerald-50 text-emerald-700", dot: "bg-emerald-500" };
   }
   return { badge: "bg-amber-50 text-amber-700", dot: "bg-amber-500" };
 }

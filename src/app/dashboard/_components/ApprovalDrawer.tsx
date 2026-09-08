@@ -3,12 +3,14 @@
 import { useState, type ComponentType, type ReactNode } from "react";
 import {
   BookOpen,
-  BotMessageSquare,
+  MessageSquare,
   CalendarDays,
   Check,
   Eye,
   FileSearch,
+  Image as ImageIcon,
   ListChecks,
+  Play,
   Minus,
   Receipt,
   ShieldCheck,
@@ -53,7 +55,6 @@ function impactIcon(label: string): ComponentType<{ className?: string }> {
 }
 
 function impactTrend(
-  label: string,
   before: string,
   value: string,
 ): { icon: ComponentType<{ className?: string }>; tone: string } {
@@ -62,14 +63,10 @@ function impactTrend(
   if (from === null || to === null || from === to) {
     return { icon: Minus, tone: "text-zinc-400" };
   }
-  const key = label.toLowerCase();
-  const neutral = /spent|spend|budget|amount/.test(key);
-  const lowerIsBetter = /cost|cpa|cpm|cpc|wasted|frequency/.test(key);
   const up = to > from;
-  const good = neutral ? null : lowerIsBetter ? !up : up;
   return {
     icon: up ? TrendingUp : TrendingDown,
-    tone: good === null ? "text-zinc-500" : good ? "text-emerald-600" : "text-red-600",
+    tone: up ? "text-emerald-600" : "text-red-600",
   };
 }
 
@@ -81,7 +78,7 @@ function SectionTitle({
   children: ReactNode;
 }) {
   return (
-    <h4 className="flex items-center gap-2 text-lg font-bold text-zinc-900">
+    <h4 className="flex items-center gap-2 text-base font-semibold text-zinc-900">
       <Icon className="h-5 w-5 text-zinc-500" aria-hidden="true" />
       {children}
     </h4>
@@ -129,22 +126,33 @@ function DateComparison({
   const current = valid ? summarize(daily, start, end) : null;
   const previous = valid ? summarize(daily, prevStart, prevEnd) : null;
 
+  const singular = resultNoun.replace(/s$/, "");
   const rows: MetricRow[] = [
-    { label: "Amount spent", read: (s) => s.spend, format: (v) => formatMoney(v) },
+    { label: "Money spent", read: (s) => s.spend, format: (v) => formatMoney(v) },
     {
-      label: `Results (${resultNoun})`,
+      label: resultNoun.charAt(0).toUpperCase() + resultNoun.slice(1),
       read: (s) => s.results,
       format: (v) => v.toLocaleString("en-US"),
       better: "up",
     },
     {
-      label: "Cost per result",
+      label: `Cost per ${singular}`,
       read: (s) => s.costPerResult,
       format: (v) => formatMoney(v, true),
       better: "down",
     },
-    { label: "Link CTR", read: (s) => s.ctr, format: (v) => formatPercent(v), better: "up" },
-    { label: "CPM", read: (s) => s.cpm, format: (v) => formatMoney(v, true), better: "down" },
+    {
+      label: "People who clicked",
+      read: (s) => s.ctr,
+      format: (v) => formatPercent(v),
+      better: "up",
+    },
+    {
+      label: "Cost per 1,000 views",
+      read: (s) => s.cpm,
+      format: (v) => formatMoney(v, true),
+      better: "down",
+    },
   ];
 
   const chip = (active: boolean) =>
@@ -293,7 +301,7 @@ export default function ApprovalDrawer({
   onAskZavi: (text: string) => void;
 }) {
   const [confirming, setConfirming] = useState(false);
-  const verb = actionVerb(request.title);
+  const verb = request.actionLabel ?? actionVerb(request.title);
   const hasData =
     Boolean(request.preview) ||
     request.impact.length > 0 ||
@@ -339,6 +347,34 @@ export default function ApprovalDrawer({
     </section>
   );
 
+  const creativeSection = request.creative ? (
+    <section className="mt-6 border-t border-zinc-200 pt-6">
+      <SectionTitle icon={ImageIcon}>Ad preview</SectionTitle>
+      <div className="mt-3 flex items-center gap-4 rounded-2xl border border-zinc-200 bg-white p-4">
+        <div className="relative h-24 w-24 shrink-0 overflow-hidden rounded-xl bg-zinc-100">
+          <img
+            src={request.creative.image}
+            alt={request.creative.caption}
+            className="h-full w-full object-cover"
+          />
+          {request.creative.kind === "video" && (
+            <div className="absolute inset-0 flex items-center justify-center bg-black/25">
+              <Play className="h-8 w-8 fill-white text-white" aria-hidden="true" />
+            </div>
+          )}
+        </div>
+        <div className="min-w-0 flex-1">
+          <p className="text-sm font-semibold text-zinc-900">
+            {request.creative.caption}
+          </p>
+          <p className="mt-1 text-sm font-medium text-zinc-600">
+            {request.creative.kind === "video" ? "Video ad" : "Image ad"} · currently live
+          </p>
+        </div>
+      </div>
+    </section>
+  ) : null;
+
   const previewSection = request.preview ? (
     <section className="mt-6 border-t border-zinc-200 pt-6">
       <SectionTitle icon={Eye}>{request.preview.label}</SectionTitle>
@@ -367,7 +403,7 @@ export default function ApprovalDrawer({
           {request.impact.map((stat) => {
             const Icon = impactIcon(stat.label);
             const trend = stat.before
-              ? impactTrend(stat.label, stat.before, stat.value)
+              ? impactTrend(stat.before, stat.value)
               : null;
             const TrendIcon = trend?.icon;
             return (
@@ -539,7 +575,7 @@ export default function ApprovalDrawer({
               }}
               className="ml-auto flex h-10 w-10 shrink-0 cursor-pointer items-center justify-center rounded-lg text-zinc-600 transition-colors duration-200 hover:bg-zinc-100 hover:text-zinc-900"
             >
-              <BotMessageSquare className="h-5 w-5" aria-hidden="true" />
+              <MessageSquare className="h-5 w-5" aria-hidden="true" />
             </button>
           </>
         )}
@@ -563,6 +599,7 @@ export default function ApprovalDrawer({
             {sourcesSection}
           </div>
           <div className="col-span-7 min-h-0 overflow-y-auto pb-8 [&>*:first-child]:mt-0 [&>*:first-child]:border-t-0 [&>*:first-child]:pt-0">
+            {creativeSection}
             {previewSection}
             {impactSection}
             {evidenceSection}
@@ -583,6 +620,7 @@ export default function ApprovalDrawer({
         <p className="mt-1 text-sm text-zinc-500">{request.detail}</p>
         {whySection}
         {planSection}
+        {creativeSection}
         {previewSection}
         {impactSection}
         {evidenceSection}

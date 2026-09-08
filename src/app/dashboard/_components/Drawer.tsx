@@ -1,7 +1,40 @@
 "use client";
 
-import { useEffect, useRef, type ReactNode } from "react";
+import {
+  useEffect,
+  useRef,
+  type ComponentType,
+  type ReactNode,
+} from "react";
 import { Maximize2, Minimize2, X } from "lucide-react";
+
+export function ChannelBadge({
+  name,
+  color,
+  icon: Icon,
+  glyph,
+}: {
+  name: string;
+  color: string;
+  icon?: ComponentType<{ className?: string }>;
+  glyph?: string;
+}) {
+  return (
+    <span className="flex shrink-0 items-center gap-2 rounded-full border border-zinc-200 bg-white py-1 pr-3 pl-1">
+      <span
+        className={`flex h-7 w-7 shrink-0 items-center justify-center rounded-full text-white ${color}`}
+        aria-hidden="true"
+      >
+        {Icon ? (
+          <Icon className="h-4 w-4" />
+        ) : (
+          <span className="text-sm font-bold">{glyph}</span>
+        )}
+      </span>
+      <span className="text-sm font-semibold text-zinc-900">{name}</span>
+    </span>
+  );
+}
 
 export function Drawer({
   open,
@@ -11,6 +44,7 @@ export function Drawer({
   width = "max-w-2xl",
   expanded,
   onToggleExpand,
+  badge,
 }: {
   open: boolean;
   title: string;
@@ -19,6 +53,7 @@ export function Drawer({
   width?: string;
   expanded?: boolean;
   onToggleExpand?: () => void;
+  badge?: ReactNode;
 }) {
   const closeRef = useRef<HTMLButtonElement>(null);
 
@@ -50,7 +85,8 @@ export function Drawer({
       >
         <div className="flex shrink-0 items-center justify-between border-b border-zinc-200 px-6 py-4">
           <h2 className="text-lg font-semibold text-zinc-900">{title}</h2>
-          <div className="flex shrink-0 items-center gap-1">
+          <div className="flex shrink-0 items-center gap-2">
+            {badge}
             {onToggleExpand && (
               <button
                 type="button"

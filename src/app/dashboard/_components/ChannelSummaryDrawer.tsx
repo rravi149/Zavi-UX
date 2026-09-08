@@ -2,7 +2,7 @@
 
 import {
   ArrowRight,
-  BotMessageSquare,
+  MessageSquare,
   Check,
   Play,
   TrendingUp,
@@ -11,6 +11,7 @@ import {
 import { useState, type ComponentType } from "react";
 import type { ApprovalReview } from "./types";
 import { confidenceTone } from "./metrics";
+import { copyOptions, type CopyOptionId } from "./plainCopy";
 
 type SummaryItem = {
   id: number;
@@ -37,11 +38,13 @@ function actionVerb(title: string): string {
 
 function ActionCard({
   item,
+  density = "full",
   onApprove,
   onReject,
   onViewDetails,
 }: {
   item: SummaryItem;
+  density?: "full" | "light";
   onApprove: (id: number) => void;
   onReject: (id: number) => void;
   onViewDetails: (id: number) => void;
@@ -51,11 +54,11 @@ function ActionCard({
 
   const [riskLevel, ...riskRest] = item.review.risk.split(". ");
   const riskDetail = riskRest.join(". ").split(". ")[0];
-  const verb = actionVerb(item.title);
+  const verb = item.review.actionLabel ?? actionVerb(item.title);
 
   return (
     <li className="flex h-full flex-col rounded-2xl border border-zinc-200 bg-white p-4">
-      <div className="flex items-start gap-3">
+      <div className="flex items-center gap-3">
         {item.review.creative && (
           <div className="shrink-0">
             <div className="relative h-14 w-14 overflow-hidden rounded-xl bg-zinc-100">
@@ -76,29 +79,41 @@ function ActionCard({
           </div>
         )}
         <div className="min-w-0 flex-1">
-          <p className="text-lg leading-snug font-bold text-zinc-900">
+          <p className="text-base leading-snug font-semibold text-zinc-900">
             {item.title}
           </p>
-          <p className="mt-0.5 text-sm text-zinc-600">{item.detail}</p>
+          {density === "light" && item.review.evidence && (
+            <span
+              className={`mt-1.5 inline-flex items-center gap-1.5 rounded-full px-2 py-0.5 text-sm font-semibold ${confidenceTone(item.review.evidence.confidence).badge}`}
+            >
+              <span
+                className={`h-1.5 w-1.5 rounded-full ${confidenceTone(item.review.evidence.confidence).dot}`}
+                aria-hidden="true"
+              />
+              {item.review.evidence.confidence}
+            </span>
+          )}
         </div>
       </div>
 
       <div className="mt-3 border-t border-zinc-200" />
 
-      <button
-        type="button"
-        aria-expanded={whyOpen}
-        title={whyOpen ? "Show less" : "Show the full reason"}
-        onClick={() => setWhyOpen((value) => !value)}
-        className="mt-3 w-full cursor-pointer text-left text-sm leading-relaxed text-zinc-600"
-      >
-        <span className={whyOpen ? "block" : "line-clamp-2"}>
-          <span className="font-semibold text-zinc-800">Why: </span>
-          {item.review.why}
-        </span>
-      </button>
+      {density === "full" && (
+        <button
+          type="button"
+          aria-expanded={whyOpen}
+          title={whyOpen ? "Show less" : "Show the full reason"}
+          onClick={() => setWhyOpen((value) => !value)}
+          className="mt-3 w-full cursor-pointer text-left text-sm leading-relaxed text-zinc-600"
+        >
+          <span className={whyOpen ? "block" : "line-clamp-2"}>
+            <span className="font-semibold text-zinc-800">Why: </span>
+            {item.review.why}
+          </span>
+        </button>
+      )}
 
-      {item.review.evidence && (
+      {density === "full" && item.review.evidence && (
         <div className="mt-3 rounded-xl border border-zinc-200">
           <div className="flex items-center justify-between border-b border-zinc-200 px-3 py-2">
             <p className="text-sm font-semibold text-zinc-800">Evidence</p>
@@ -279,6 +294,8 @@ export default function ChannelSummaryDrawer({
   summary,
   items,
   expanded,
+  copyOption,
+  onCopyOptionChange,
   onApprove,
   onReject,
   onViewDetails,
@@ -293,6 +310,8 @@ export default function ChannelSummaryDrawer({
   summary?: ChannelSummary;
   items: SummaryItem[];
   expanded?: boolean;
+  copyOption?: CopyOptionId;
+  onCopyOptionChange?: (option: CopyOptionId) => void;
   onApprove: (id: number) => void;
   onReject: (id: number) => void;
   onViewDetails: (id: number) => void;
@@ -301,6 +320,8 @@ export default function ChannelSummaryDrawer({
   onAskZavi: () => void;
 }) {
   const [confirmingAll, setConfirmingAll] = useState(false);
+  const density =
+    copyOptions.find((option) => option.id === copyOption)?.density ?? "full";
 
   return (
     <div className="flex min-h-full flex-col">
@@ -326,6 +347,42 @@ export default function ChannelSummaryDrawer({
           </div>
         </div>
 
+        {copyOption && onCopyOptionChange && (
+          <section className="rounded-2xl border border-zinc-200 bg-white p-4">
+            <p className="text-base font-semibold text-zinc-900">
+              How should Zavi explain these?
+            </p>
+            <p className="mt-1 text-sm font-medium text-zinc-600">
+              Same 5 recommendations and the same numbers. Only the wording
+              changes. Pick the one that reads best for you.
+            </p>
+            <div className="mt-3 flex flex-wrap gap-2">
+              {copyOptions.map((option) => {
+                const active = option.id === copyOption;
+                return (
+                  <button
+                    key={option.id}
+                    type="button"
+                    aria-pressed={active}
+                    title={option.hint}
+                    onClick={() => onCopyOptionChange(option.id)}
+                    className={`h-10 cursor-pointer rounded-lg px-4 text-sm font-semibold transition-colors duration-200 ${
+                      active
+                        ? "bg-zinc-900 text-white"
+                        : "border border-zinc-200 bg-white text-zinc-700 hover:bg-zinc-100"
+                    }`}
+                  >
+                    {option.label}
+                  </button>
+                );
+              })}
+            </div>
+            <p className="mt-2.5 text-sm font-medium text-zinc-600">
+              {copyOptions.find((option) => option.id === copyOption)?.hint}
+            </p>
+          </section>
+        )}
+
         {summary && (
           <p className="rounded-2xl border border-zinc-200 bg-zinc-50 px-4 py-3 text-sm leading-snug font-medium text-zinc-800">
             {summary.headline}
@@ -348,6 +405,7 @@ export default function ChannelSummaryDrawer({
               <ActionCard
                 key={item.id}
                 item={item}
+                density={density}
                 onApprove={onApprove}
                 onReject={onReject}
                 onViewDetails={onViewDetails}
@@ -417,7 +475,7 @@ export default function ChannelSummaryDrawer({
                   onClick={onAskZavi}
                   className="ml-auto flex h-10 w-10 shrink-0 cursor-pointer items-center justify-center rounded-lg text-zinc-600 transition-colors duration-200 hover:bg-zinc-100 hover:text-zinc-900"
                 >
-                  <BotMessageSquare className="h-5 w-5" aria-hidden="true" />
+                  <MessageSquare className="h-5 w-5" aria-hidden="true" />
                 </button>
               </>
             )}

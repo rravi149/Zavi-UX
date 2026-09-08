@@ -78,6 +78,8 @@ export type ApprovalReview = {
   reversible?: { label: string; body: string };
   daily?: DailyMetric[];
   resultNoun?: string;
+  /** Short label for the approve button, e.g. "Turn it off". */
+  actionLabel?: string;
   risk: string;
   undo: string;
   sources: string[];

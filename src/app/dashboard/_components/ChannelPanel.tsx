@@ -8,7 +8,7 @@ import {
 } from "react";
 import {
   ArrowRight,
-  BotMessageSquare,
+  MessageSquare,
   Check,
   ChevronDown,
   Crown,
@@ -36,13 +36,19 @@ import {
 import { FaLinkedin } from "react-icons/fa6";
 import { IconButton, Panel, PanelHeader } from "./Panel";
 import { Dropdown } from "./Dropdown";
-import { Drawer } from "./Drawer";
+import { ChannelBadge, Drawer } from "./Drawer";
 import PostDrawer from "./PostDrawer";
 import ChannelSummaryDrawer, {
   type ChannelSummary,
 } from "./ChannelSummaryDrawer";
 import type { Tab as AnalyticsTab } from "./AnalyticsPanel";
-import { dailySeries } from "./metrics";
+import { confidenceTone, dailySeries } from "./metrics";
+import {
+  applyCopy,
+  channelHeadline,
+  metaItemCopy,
+  type CopyOptionId,
+} from "./plainCopy";
 import type {
   ApprovalKind,
   ApprovalRequest,
@@ -222,10 +228,6 @@ const channelConfigs: ChannelConfig[] = [
             "Keep the existing audience, placements, and budget unchanged",
             "Watch link CTR and frequency for 5 days",
           ],
-          preview: {
-            label: "New creative angle",
-            body: "\"Still thinking about it?\" carousel ad featuring the 3 most-viewed product shots from Aug 9 – Sep 7, with a 10% winback code.",
-          },
           creative: {
             image: "https://picsum.photos/seed/zavi-winback-carousel/200/200",
             caption: "\"Still thinking about it?\" carousel ad",
@@ -804,6 +806,8 @@ export default function ChannelPanel({
     return connectedChannels.includes(channel.id);
   }
 
+  const [copyOption, setCopyOption] = useState<CopyOptionId>("direct");
+
   function connectChannel(channelId: string) {
     setConnectedChannels((prev) =>
       prev.includes(channelId) ? prev : [...prev, channelId],
@@ -825,7 +829,13 @@ export default function ChannelPanel({
           review: taskReview(task.source, task.title),
         }));
     }
-    return staticItems[channel.id] ?? [];
+    const items = staticItems[channel.id] ?? [];
+    if (channel.id === "meta-ads") {
+      return items.map((item) =>
+        applyCopy(item, metaItemCopy[copyOption][item.id]),
+      );
+    }
+    return items;
   }
 
   const channels = order
@@ -1230,9 +1240,6 @@ export default function ChannelPanel({
                               <p className="text-[15px] leading-snug font-semibold text-zinc-900">
                                 {item.title}
                               </p>
-                              <p className="mt-0.5 line-clamp-2 text-sm text-zinc-600">
-                                {channel.name} · {item.detail}
-                              </p>
                             </div>
                           </div>
                           {item.review.trend && (
@@ -1263,6 +1270,18 @@ export default function ChannelPanel({
                           ) : (
                             <>
                               <div className="mt-3 flex flex-wrap items-center gap-2">
+                                {item.review.evidence && (
+                                  <span
+                                    className={`inline-flex shrink-0 items-center gap-1.5 rounded-full px-2 py-0.5 text-sm font-semibold ${confidenceTone(item.review.evidence.confidence).badge}`}
+                                  >
+                                    <span
+                                      className={`h-1.5 w-1.5 rounded-full ${confidenceTone(item.review.evidence.confidence).dot}`}
+                                      aria-hidden="true"
+                                    />
+                                    {item.review.evidence.confidence}
+                                  </span>
+                                )}
+                                <div className="ml-auto flex items-center gap-2">
                                 <button
                                   type="button"
                                   aria-label={item.post ? "Review post" : "Mark as done"}
@@ -1305,11 +1324,11 @@ export default function ChannelPanel({
                                         `About "${item.title}" — `,
                                       )
                                     }
-                                    className="ml-auto"
                                   >
-                                    <BotMessageSquare className="h-5 w-5" />
+                                    <MessageSquare className="h-5 w-5" />
                                   </IconButton>
                                 )}
+                                </div>
                               </div>
                             </>
                           )}
@@ -1351,7 +1370,17 @@ export default function ChannelPanel({
 
       <Drawer
         open={viewAllChannel !== undefined}
-        title={viewAllChannel ? `${viewAllChannel.name} — all actions` : "All actions"}
+        title="All actions"
+        badge={
+          viewAllChannel && (
+            <ChannelBadge
+              name={viewAllChannel.name}
+              color={viewAllChannel.color}
+              icon={viewAllChannel.icon}
+              glyph={viewAllChannel.glyph}
+            />
+          )
+        }
         onClose={() => {
           setViewAllId(null);
           setViewAllExpanded(true);
@@ -1366,7 +1395,20 @@ export default function ChannelPanel({
             channelColor={viewAllChannel.color}
             icon={viewAllChannel.icon}
             glyph={viewAllChannel.glyph}
-            summary={viewAllChannel.summary}
+            summary={
+              viewAllChannel.id === "meta-ads" && viewAllChannel.summary
+                ? {
+                    ...viewAllChannel.summary,
+                    headline: channelHeadline[copyOption],
+                  }
+                : viewAllChannel.summary
+            }
+            copyOption={
+              viewAllChannel.id === "meta-ads" ? copyOption : undefined
+            }
+            onCopyOptionChange={
+              viewAllChannel.id === "meta-ads" ? setCopyOption : undefined
+            }
             expanded={viewAllExpanded}
             items={viewAllItems.map((item) => ({
               id: item.id,
