@@ -187,7 +187,16 @@ export default function StartPage() {
   }
 
   function goBack() {
+    if (step === 0) {
+      update("mode", null);
+      return;
+    }
     setStep((s) => Math.max(0, s - 1));
+  }
+
+  function chooseMode(mode: "grow" | "build") {
+    setStep(0);
+    update("mode", mode);
   }
 
   function finish() {
@@ -224,7 +233,7 @@ export default function StartPage() {
         </span>
       </a>
 
-      {step < TOTAL_STEPS - 1 && (
+      {data.mode === "grow" && step < TOTAL_STEPS - 1 && (
         <button
           type="button"
           onClick={finish}
@@ -235,6 +244,104 @@ export default function StartPage() {
       )}
 
       <div className="relative z-[1] w-full max-w-[560px]">
+        {data.mode === null && (
+          <div>
+            <h1 className="text-[34px] leading-[1.1] font-semibold tracking-tight text-foreground sm:text-[40px]">
+              Let&apos;s get started
+            </h1>
+            <p className="mt-4 max-w-[420px] text-[15px] leading-relaxed text-muted">
+              Do 10x more. Zavi builds, grows, and runs your business for you.
+            </p>
+
+            <div className="mt-9 grid gap-3">
+              <button
+                type="button"
+                onClick={() => chooseMode("grow")}
+                className="group cursor-pointer rounded-2xl border border-black/[0.08] bg-white/70 p-5 text-left transition-colors duration-200 hover:border-black/20 hover:bg-white"
+              >
+                <span className="flex h-10 w-10 items-center justify-center rounded-xl bg-foreground text-white">
+                  <TrendingUp className="h-5 w-5" aria-hidden="true" />
+                </span>
+                <span className="mt-4 block text-[17px] font-semibold text-foreground">
+                  Grow my company
+                </span>
+                <span className="mt-1 block text-sm leading-relaxed text-muted">
+                  Already have a business and a website
+                </span>
+              </button>
+            </div>
+
+            <button
+              type="button"
+              onClick={() => chooseMode("build")}
+              className="mt-7 cursor-pointer text-sm font-medium text-muted underline underline-offset-4 transition-colors duration-200 hover:text-foreground"
+            >
+              Don&apos;t have a website yet? Create one from scratch
+            </button>
+          </div>
+        )}
+
+        {data.mode === "build" && (
+          <div>
+            <h1 className="text-[34px] leading-[1.1] font-semibold tracking-tight text-foreground sm:text-[40px]">
+              What&apos;s your idea?
+            </h1>
+            <p className="mt-4 max-w-[460px] text-[15px] leading-relaxed text-muted">
+              Zavi thinks, builds, and markets your project autonomously. It
+              plans, codes and deploys it, then gives you a live URL. Refine it
+              by chat after.
+            </p>
+
+            <div className="mt-7">
+              <TextArea
+                autoFocus
+                rows={5}
+                value={data.idea}
+                onChange={(e) => update("idea", e.target.value)}
+                onKeyDown={(e) => {
+                  if ((e.metaKey || e.ctrlKey) && e.key === "Enter") {
+                    e.preventDefault();
+                    if (data.idea.trim()) finish();
+                  }
+                }}
+                placeholder="Type your idea… (⌘ / Ctrl + Enter to send)"
+              />
+            </div>
+
+            <button
+              type="button"
+              onClick={() =>
+                update(
+                  "idea",
+                  "A booking site for a small dog grooming salon, with prices, opening hours and online payments.",
+                )
+              }
+              className="mt-4 flex cursor-pointer items-center gap-1.5 text-sm font-medium text-muted transition-colors duration-200 hover:text-foreground"
+            >
+              <Sparkles className="h-4 w-4" aria-hidden="true" />
+              Not sure yet? Brainstorm it
+            </button>
+
+            <div className="mt-8 flex items-center justify-between border-t border-black/[0.06] pt-6">
+              <TextButton
+                onClick={() => update("mode", null)}
+                className="flex items-center gap-1.5"
+              >
+                <ArrowLeft className="h-3.5 w-3.5" />
+                Back
+              </TextButton>
+              <PrimaryButton
+                onClick={finish}
+                disabled={data.idea.trim().length === 0}
+              >
+                Sign up to build
+              </PrimaryButton>
+            </div>
+          </div>
+        )}
+
+        {data.mode === "grow" && (
+          <>
         {step === 0 && (
           <StepShell
             step={1}
@@ -269,7 +376,7 @@ export default function StartPage() {
               </label>
             </div>
 
-            <div className="mt-8">
+            <div className="mt-8 flex flex-wrap items-center gap-4">
               <PrimaryButton
                 onClick={goNext}
                 disabled={!canContinue}
@@ -278,6 +385,13 @@ export default function StartPage() {
               >
                 Continue
               </PrimaryButton>
+              <TextButton
+                onClick={() => update("mode", null)}
+                className="flex items-center gap-1.5"
+              >
+                <ArrowLeft className="h-3.5 w-3.5" />
+                Back
+              </TextButton>
             </div>
           </StepShell>
         )}
@@ -570,6 +684,8 @@ export default function StartPage() {
               <PrimaryButton onClick={finish}>Go to dashboard</PrimaryButton>
             </div>
           </div>
+        )}
+          </>
         )}
       </div>
     </div>

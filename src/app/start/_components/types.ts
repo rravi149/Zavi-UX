@@ -20,7 +20,12 @@ export type FocusAreaId =
   | "expansion"
   | "other";
 
+/** Which path the person picked on the very first screen. */
+export type StartMode = "grow" | "build";
+
 export type OnboardingData = {
+  mode: StartMode | null;
+  idea: string;
   companyWebsite: string;
   companyName: string;
   description: string;
@@ -32,6 +37,8 @@ export type OnboardingData = {
 };
 
 export const emptyOnboardingData: OnboardingData = {
+  mode: null,
+  idea: "",
   companyWebsite: "",
   companyName: "",
   description: "",
