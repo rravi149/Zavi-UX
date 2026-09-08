@@ -6,8 +6,8 @@ export type CopyOption = {
   id: CopyOptionId;
   label: string;
   hint: string;
-  /** "full" shows the reasoning and the evidence table. "light" shows only the headline numbers. */
-  density: "full" | "light";
+  /** "grid" lays all actions out side by side. "focus" walks through them one at a time. */
+  layout: "grid" | "focus";
 };
 
 /**
@@ -19,14 +19,14 @@ export const copyOptions: CopyOption[] = [
   {
     id: "direct",
     label: "Option 1 · Straight talk",
-    hint: "Says what the money is doing and what to change, with the workings shown.",
-    density: "full",
+    hint: "Every change side by side, with the workings shown on each card.",
+    layout: "grid",
   },
   {
     id: "conversational",
     label: "Option 2 · Ask me first",
-    hint: "Just the question and the one number that matters. Tap through for the rest.",
-    density: "light",
+    hint: "One decision at a time, with just the number that matters.",
+    layout: "focus",
   },
 ];
 
@@ -501,52 +501,69 @@ type Item = {
   review: ApprovalReview;
 };
 
+function mergeReview<T extends ApprovalReview>(review: T, copy: ItemCopy): T {
+  return {
+    ...review,
+    why: copy.why,
+    plan: copy.plan,
+    outcome: copy.outcome,
+    risk: copy.risk,
+    undo: copy.undo,
+    actionLabel: copy.actionLabel,
+    resultNoun: copy.resultNoun ?? review.resultNoun,
+    impactPeriod: copy.impactPeriod ?? review.impactPeriod,
+    sources: copy.sources ?? review.sources,
+    creative: review.creative && {
+      ...review.creative,
+      caption: copy.creativeCaption ?? review.creative.caption,
+    },
+    trend: review.trend && {
+      ...review.trend,
+      label: copy.trendLabel ?? review.trend.label,
+    },
+    impact: review.impact.map((stat, index) => ({
+      ...stat,
+      label: copy.impactLabels?.[index] ?? stat.label,
+    })),
+    evidence: review.evidence && {
+      ...review.evidence,
+      confidence: copy.confidence ?? review.evidence.confidence,
+      rows: review.evidence.rows.map((row, index) => {
+        const override = copy.evidence?.[index];
+        if (!override) return row;
+        return {
+          ...row,
+          label: override.label ?? row.label,
+          value: override.value ?? row.value,
+          note: override.note ?? row.note,
+        };
+      }),
+    },
+  };
+}
+
 /** Returns the item reworded for the chosen option. Numbers are untouched. */
 export function applyCopy<T extends Item>(item: T, copy?: ItemCopy): T {
   if (!copy) return item;
-  const review = item.review;
-
   return {
     ...item,
     title: copy.title,
     detail: copy.detail,
-    review: {
-      ...review,
-      why: copy.why,
-      plan: copy.plan,
-      outcome: copy.outcome,
-      risk: copy.risk,
-      undo: copy.undo,
-      resultNoun: copy.resultNoun ?? review.resultNoun,
-      actionLabel: copy.actionLabel,
-      impactPeriod: copy.impactPeriod ?? review.impactPeriod,
-      sources: copy.sources ?? review.sources,
-      creative: review.creative && {
-        ...review.creative,
-        caption: copy.creativeCaption ?? review.creative.caption,
-      },
-      trend: review.trend && {
-        ...review.trend,
-        label: copy.trendLabel ?? review.trend.label,
-      },
-      impact: review.impact.map((stat, index) => ({
-        ...stat,
-        label: copy.impactLabels?.[index] ?? stat.label,
-      })),
-      evidence: review.evidence && {
-        ...review.evidence,
-        confidence: copy.confidence ?? review.evidence.confidence,
-        rows: review.evidence.rows.map((row, index) => {
-          const override = copy.evidence?.[index];
-          if (!override) return row;
-          return {
-            ...row,
-            label: override.label ?? row.label,
-            value: override.value ?? row.value,
-            note: override.note ?? row.note,
-          };
-        }),
-      },
-    },
+    review: mergeReview(item.review, copy),
   };
+}
+
+/** Same rewording, for the flattened approval request the details drawer takes. */
+export function applyRequestCopy<
+  T extends ApprovalReview & { title: string; detail: string },
+>(request: T, copy?: ItemCopy): T {
+  if (!copy) return request;
+  return { ...mergeReview(request, copy), title: copy.title, detail: copy.detail };
+}
+
+/** Reads the numeric item id out of an approval key like "meta-ads:3". */
+export function metaItemIdFromKey(key: string): number | null {
+  if (!key.startsWith("meta-ads:")) return null;
+  const id = Number(key.split(":")[1]);
+  return Number.isFinite(id) ? id : null;
 }

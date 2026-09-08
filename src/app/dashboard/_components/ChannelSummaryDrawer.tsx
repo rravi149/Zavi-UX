@@ -38,13 +38,11 @@ function actionVerb(title: string): string {
 
 function ActionCard({
   item,
-  density = "full",
   onApprove,
   onReject,
   onViewDetails,
 }: {
   item: SummaryItem;
-  density?: "full" | "light";
   onApprove: (id: number) => void;
   onReject: (id: number) => void;
   onViewDetails: (id: number) => void;
@@ -82,38 +80,25 @@ function ActionCard({
           <p className="text-base leading-snug font-semibold text-zinc-900">
             {item.title}
           </p>
-          {density === "light" && item.review.evidence && (
-            <span
-              className={`mt-1.5 inline-flex items-center gap-1.5 rounded-full px-2 py-0.5 text-sm font-semibold ${confidenceTone(item.review.evidence.confidence).badge}`}
-            >
-              <span
-                className={`h-1.5 w-1.5 rounded-full ${confidenceTone(item.review.evidence.confidence).dot}`}
-                aria-hidden="true"
-              />
-              {item.review.evidence.confidence}
-            </span>
-          )}
         </div>
       </div>
 
       <div className="mt-3 border-t border-zinc-200" />
 
-      {density === "full" && (
-        <button
-          type="button"
-          aria-expanded={whyOpen}
-          title={whyOpen ? "Show less" : "Show the full reason"}
-          onClick={() => setWhyOpen((value) => !value)}
-          className="mt-3 w-full cursor-pointer text-left text-sm leading-relaxed text-zinc-600"
-        >
-          <span className={whyOpen ? "block" : "line-clamp-2"}>
-            <span className="font-semibold text-zinc-800">Why: </span>
-            {item.review.why}
-          </span>
-        </button>
-      )}
+      <button
+        type="button"
+        aria-expanded={whyOpen}
+        title={whyOpen ? "Show less" : "Show the full reason"}
+        onClick={() => setWhyOpen((value) => !value)}
+        className="mt-3 w-full cursor-pointer text-left text-sm leading-relaxed text-zinc-600"
+      >
+        <span className={whyOpen ? "block" : "line-clamp-2"}>
+          <span className="font-semibold text-zinc-800">Why: </span>
+          {item.review.why}
+        </span>
+      </button>
 
-      {density === "full" && item.review.evidence && (
+      {item.review.evidence && (
         <div className="mt-3 rounded-xl border border-zinc-200">
           <div className="flex items-center justify-between border-b border-zinc-200 px-3 py-2">
             <p className="text-sm font-semibold text-zinc-800">Evidence</p>
@@ -286,6 +271,122 @@ function ActionCard({
   );
 }
 
+function SimpleActionRow({
+  item,
+  onApprove,
+  onReject,
+  onViewDetails,
+}: {
+  item: SummaryItem;
+  onApprove: (id: number) => void;
+  onReject: (id: number) => void;
+  onViewDetails: (id: number) => void;
+}) {
+  const [confirming, setConfirming] = useState(false);
+  const verb = item.review.actionLabel ?? actionVerb(item.title);
+  const tone = item.review.evidence
+    ? confidenceTone(item.review.evidence.confidence)
+    : null;
+
+  return (
+    <li className="rounded-2xl border border-zinc-200 bg-white px-4 py-3.5">
+      <div className="flex items-center gap-4">
+        {item.review.creative && (
+          <div className="relative h-14 w-14 shrink-0 overflow-hidden rounded-xl bg-zinc-100">
+            <img
+              src={item.review.creative.image}
+              alt={item.review.creative.caption}
+              className="h-full w-full object-cover"
+            />
+            {item.review.creative.kind === "video" && (
+              <div className="absolute inset-0 flex items-center justify-center bg-black/25">
+                <Play className="h-5 w-5 fill-white text-white" aria-hidden="true" />
+              </div>
+            )}
+          </div>
+        )}
+
+        <div className="min-w-0 flex-1">
+          <p className="text-base leading-snug font-semibold text-zinc-900">
+            {item.title}
+          </p>
+          {item.review.trend && (
+            <p className="mt-1 flex flex-wrap items-center gap-1.5 text-sm font-medium text-zinc-600">
+              {item.review.trend.label}
+              <span className="text-zinc-400 line-through decoration-zinc-300">
+                {item.review.trend.before}
+              </span>
+              <ArrowRight className="h-3.5 w-3.5 shrink-0 text-zinc-400" aria-hidden="true" />
+              <span className="font-bold text-zinc-900">
+                {item.review.trend.after}
+              </span>
+            </p>
+          )}
+        </div>
+
+        {tone && item.review.evidence && (
+          <span
+            className={`hidden shrink-0 items-center gap-1.5 rounded-full px-2 py-0.5 text-sm font-semibold sm:flex ${tone.badge}`}
+          >
+            <span className={`h-1.5 w-1.5 rounded-full ${tone.dot}`} aria-hidden="true" />
+            {item.review.evidence.confidence}
+          </span>
+        )}
+
+        <div className="flex shrink-0 items-center gap-2">
+          {confirming ? (
+            <>
+              <button
+                type="button"
+                onClick={() => {
+                  setConfirming(false);
+                  onApprove(item.id);
+                }}
+                className="flex h-10 shrink-0 cursor-pointer items-center gap-2 rounded-lg bg-zinc-900 px-4 text-sm font-semibold text-white transition-colors duration-200 hover:bg-zinc-700"
+              >
+                <Check className="h-4 w-4" aria-hidden="true" />
+                Yes, {verb.toLowerCase()}
+              </button>
+              <button
+                type="button"
+                onClick={() => setConfirming(false)}
+                className="flex h-10 shrink-0 cursor-pointer items-center rounded-lg border border-zinc-200 bg-white px-4 text-sm font-semibold text-zinc-900 transition-colors duration-200 hover:bg-zinc-100"
+              >
+                Cancel
+              </button>
+            </>
+          ) : (
+            <>
+              <button
+                type="button"
+                onClick={() => setConfirming(true)}
+                className="flex h-10 shrink-0 cursor-pointer items-center gap-2 rounded-lg bg-zinc-900 px-4 text-sm font-semibold text-white transition-colors duration-200 hover:bg-zinc-700"
+              >
+                <Check className="h-4 w-4" aria-hidden="true" />
+                {verb}
+              </button>
+              <button
+                type="button"
+                onClick={() => onReject(item.id)}
+                className="flex h-10 shrink-0 cursor-pointer items-center rounded-lg border border-zinc-200 bg-white px-4 text-sm font-semibold text-zinc-900 transition-colors duration-200 hover:bg-zinc-100"
+              >
+                Not now
+              </button>
+              <button
+                type="button"
+                onClick={() => onViewDetails(item.id)}
+                className="shrink-0 cursor-pointer text-sm font-medium text-zinc-600 underline underline-offset-4 transition-colors duration-200 hover:text-zinc-900"
+              >
+                Details
+              </button>
+            </>
+          )}
+        </div>
+      </div>
+    </li>
+  );
+}
+
 export default function ChannelSummaryDrawer({
   channelName,
   channelColor,
@@ -320,8 +421,8 @@ export default function ChannelSummaryDrawer({
   onAskZavi: () => void;
 }) {
   const [confirmingAll, setConfirmingAll] = useState(false);
-  const density =
-    copyOptions.find((option) => option.id === copyOption)?.density ?? "full";
+  const layout =
+    copyOptions.find((option) => option.id === copyOption)?.layout ?? "grid";
 
   return (
     <div className="flex min-h-full flex-col">
@@ -348,39 +449,28 @@ export default function ChannelSummaryDrawer({
         </div>
 
         {copyOption && onCopyOptionChange && (
-          <section className="rounded-2xl border border-zinc-200 bg-white p-4">
-            <p className="text-base font-semibold text-zinc-900">
-              How should Zavi explain these?
-            </p>
-            <p className="mt-1 text-sm font-medium text-zinc-600">
-              Same 5 recommendations and the same numbers. Only the wording
-              changes. Pick the one that reads best for you.
-            </p>
-            <div className="mt-3 flex flex-wrap gap-2">
-              {copyOptions.map((option) => {
-                const active = option.id === copyOption;
-                return (
-                  <button
-                    key={option.id}
-                    type="button"
-                    aria-pressed={active}
-                    title={option.hint}
-                    onClick={() => onCopyOptionChange(option.id)}
-                    className={`h-10 cursor-pointer rounded-lg px-4 text-sm font-semibold transition-colors duration-200 ${
-                      active
-                        ? "bg-zinc-900 text-white"
-                        : "border border-zinc-200 bg-white text-zinc-700 hover:bg-zinc-100"
-                    }`}
-                  >
-                    {option.label}
-                  </button>
-                );
-              })}
-            </div>
-            <p className="mt-2.5 text-sm font-medium text-zinc-600">
-              {copyOptions.find((option) => option.id === copyOption)?.hint}
-            </p>
-          </section>
+          <div className="flex flex-wrap items-center gap-2 rounded-xl border border-zinc-200 bg-zinc-50 px-3 py-2.5">
+            <p className="mr-1 text-sm font-medium text-zinc-600">Style</p>
+            {copyOptions.map((option) => {
+              const active = option.id === copyOption;
+              return (
+                <button
+                  key={option.id}
+                  type="button"
+                  aria-pressed={active}
+                  title={option.hint}
+                  onClick={() => onCopyOptionChange(option.id)}
+                  className={`h-10 cursor-pointer rounded-lg px-4 text-sm font-semibold transition-colors duration-200 ${
+                    active
+                      ? "bg-zinc-900 text-white"
+                      : "border border-zinc-200 bg-white text-zinc-700 hover:bg-zinc-100"
+                  }`}
+                >
+                  {option.label}
+                </button>
+              );
+            })}
+          </div>
         )}
 
         {summary && (
@@ -393,6 +483,18 @@ export default function ChannelSummaryDrawer({
           <p className="text-sm text-zinc-500">
             All caught up — no actions waiting.
           </p>
+        ) : layout === "focus" ? (
+          <ul className="space-y-2.5">
+            {items.map((item) => (
+              <SimpleActionRow
+                key={item.id}
+                item={item}
+                onApprove={onApprove}
+                onReject={onReject}
+                onViewDetails={onViewDetails}
+              />
+            ))}
+          </ul>
         ) : (
           <ul
             className={
@@ -405,7 +507,6 @@ export default function ChannelSummaryDrawer({
               <ActionCard
                 key={item.id}
                 item={item}
-                density={density}
                 onApprove={onApprove}
                 onReject={onReject}
                 onViewDetails={onViewDetails}

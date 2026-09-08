@@ -2,10 +2,12 @@
 
 import { useState, type ComponentType, type ReactNode } from "react";
 import {
+  ArrowRight,
   BookOpen,
   MessageSquare,
   CalendarDays,
   Check,
+  ChevronDown,
   Eye,
   FileSearch,
   Image as ImageIcon,
@@ -21,6 +23,7 @@ import {
   X,
 } from "lucide-react";
 import type { ApprovalRequest } from "./types";
+import { copyOptions, type CopyOptionId } from "./plainCopy";
 import {
   addDays,
   confidenceTone,
@@ -292,16 +295,23 @@ function DateComparison({
 export default function ApprovalDrawer({
   request,
   expanded = false,
+  copyOption,
+  onCopyOptionChange,
   onClose,
   onAskZavi,
 }: {
   request: ApprovalRequest;
   expanded?: boolean;
+  copyOption?: CopyOptionId;
+  onCopyOptionChange?: (option: CopyOptionId) => void;
   onClose: () => void;
   onAskZavi: (text: string) => void;
 }) {
   const [confirming, setConfirming] = useState(false);
+  const [moreOpen, setMoreOpen] = useState(false);
   const verb = request.actionLabel ?? actionVerb(request.title);
+  const simple =
+    copyOptions.find((option) => option.id === copyOption)?.layout === "focus";
   const hasData =
     Boolean(request.preview) ||
     request.impact.length > 0 ||
@@ -519,6 +529,78 @@ export default function ApprovalDrawer({
     </section>
   );
 
+  const heroSection = request.trend ? (
+    <section className="mt-5 rounded-2xl border border-zinc-200 bg-zinc-50 px-5 py-6 text-center">
+      <p className="text-sm font-medium text-zinc-600">{request.trend.label}</p>
+      <p className="mt-1.5 flex flex-wrap items-center justify-center gap-3 text-3xl font-bold tracking-tight text-zinc-900">
+        <span className="text-zinc-400 line-through decoration-zinc-300">
+          {request.trend.before}
+        </span>
+        <ArrowRight className="h-6 w-6 shrink-0 text-zinc-400" aria-hidden="true" />
+        {request.trend.after}
+      </p>
+      {request.outcome && (
+        <p className="mt-3 flex items-center justify-center gap-2 text-base font-semibold text-emerald-700">
+          <TrendingUp className="h-5 w-5 shrink-0" aria-hidden="true" />
+          {request.outcome}
+        </p>
+      )}
+    </section>
+  ) : null;
+
+  const moreDetail = (
+    <section className="mt-6 border-t border-zinc-200 pt-6">
+      <button
+        type="button"
+        aria-expanded={moreOpen}
+        onClick={() => setMoreOpen((value) => !value)}
+        className="flex h-10 w-full cursor-pointer items-center justify-between rounded-lg text-base font-semibold text-zinc-900"
+      >
+        {moreOpen ? "Hide the extra detail" : "Show me the rest"}
+        <ChevronDown
+          className={`h-5 w-5 shrink-0 text-zinc-500 transition-transform duration-200 ${
+            moreOpen ? "rotate-180" : ""
+          }`}
+          aria-hidden="true"
+        />
+      </button>
+      {moreOpen && (
+        <div>
+          {whySection}
+          {impactSection}
+          {compareSection}
+          {sourcesSection}
+        </div>
+      )}
+    </section>
+  );
+
+  const wordingPicker =
+    copyOption && onCopyOptionChange ? (
+      <div className="mt-4 flex flex-wrap items-center gap-2 rounded-xl border border-zinc-200 bg-zinc-50 px-3 py-2.5">
+        <p className="mr-1 text-sm font-medium text-zinc-600">Wording</p>
+        {copyOptions.map((option) => {
+          const active = option.id === copyOption;
+          return (
+            <button
+              key={option.id}
+              type="button"
+              aria-pressed={active}
+              title={option.hint}
+              onClick={() => onCopyOptionChange(option.id)}
+              className={`h-10 cursor-pointer rounded-lg px-4 text-sm font-semibold transition-colors duration-200 ${
+                active
+                  ? "bg-zinc-900 text-white"
+                  : "border border-zinc-200 bg-white text-zinc-700 hover:bg-zinc-100"
+              }`}
+            >
+              {option.label}
+            </button>
+          );
+        })}
+      </div>
+    ) : null;
+
   const footer = (
     <div className="sticky bottom-0 -mx-6 -mb-5 mt-auto flex shrink-0 flex-col gap-3 border-t border-zinc-200 bg-white px-6 py-4">
       {confirming && (
@@ -583,6 +665,26 @@ export default function ApprovalDrawer({
     </div>
   );
 
+  if (simple) {
+    return (
+      <div className="flex min-h-full flex-col">
+        <div className="mx-auto w-full max-w-2xl pb-8">
+          <h3 className="text-2xl leading-snug font-bold text-zinc-900">
+            {request.title}
+          </h3>
+          <p className="mt-1 text-sm text-zinc-500">{request.detail}</p>
+          {wordingPicker}
+          {heroSection}
+          {creativeSection}
+          {planSection}
+          {evidenceSection}
+          {moreDetail}
+        </div>
+        {footer}
+      </div>
+    );
+  }
+
   if (twoColumn) {
     return (
       <div className="flex h-full min-h-0 flex-col">
@@ -591,6 +693,7 @@ export default function ApprovalDrawer({
             {request.title}
           </h3>
           <p className="mt-1 text-sm text-zinc-500">{request.detail}</p>
+        {wordingPicker}
         </div>
         <div className="mt-5 grid min-h-0 flex-1 grid-cols-12 grid-rows-[minmax(0,1fr)] gap-x-10">
           <div className="col-span-5 min-h-0 overflow-y-auto pb-8">
@@ -618,6 +721,7 @@ export default function ApprovalDrawer({
           {request.title}
         </h3>
         <p className="mt-1 text-sm text-zinc-500">{request.detail}</p>
+        {wordingPicker}
         {whySection}
         {planSection}
         {creativeSection}

@@ -20,6 +20,12 @@ import AnalyticsPanel, { type Tab as AnalyticsTab } from "./AnalyticsPanel";
 import ChannelPanel from "./ChannelPanel";
 import BuildPreview from "./BuildPreview";
 import { ChannelBadge, Drawer } from "./Drawer";
+import {
+  applyRequestCopy,
+  metaItemCopy,
+  metaItemIdFromKey,
+  type CopyOptionId,
+} from "./plainCopy";
 import OnboardingDrawer from "./OnboardingDrawer";
 import GoalsDrawer from "./GoalsDrawer";
 import GrowthPlanPanel from "./GrowthPlanPanel";
@@ -181,6 +187,7 @@ export default function Workspace() {
   const [plan, setPlan] = useState<Plan>("free");
   const [approval, setApproval] = useState<ApprovalRequest | null>(null);
   const [approvalExpanded, setApprovalExpanded] = useState(true);
+  const [copyOption, setCopyOption] = useState<CopyOptionId>("direct");
   const [brainOpen, setBrainOpen] = useState(false);
   const [settings, setSettings] = useState<{
     section?: SettingsSection;
@@ -599,6 +606,8 @@ export default function Workspace() {
             onUpgrade={upgrade}
             onReview={openApproval}
             onAskZavi={askZavi}
+            copyOption={copyOption}
+            onCopyOptionChange={setCopyOption}
             onSelectChannel={(tab) => {
               setAnalyticsTab(tab);
               if (collapsed.analytics) {
@@ -783,8 +792,19 @@ export default function Workspace() {
         {approval && (
           <ApprovalDrawer
             key={approval.key}
-            request={approval}
+            request={applyRequestCopy(
+              approval,
+              metaItemIdFromKey(approval.key) === null
+                ? undefined
+                : metaItemCopy[copyOption][
+                    metaItemIdFromKey(approval.key) as number
+                  ],
+            )}
             expanded={approvalExpanded}
+            copyOption={
+              metaItemIdFromKey(approval.key) === null ? undefined : copyOption
+            }
+            onCopyOptionChange={setCopyOption}
             onClose={closeApproval}
             onAskZavi={askZavi}
           />

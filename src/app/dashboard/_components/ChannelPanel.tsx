@@ -758,6 +758,8 @@ export default function ChannelPanel({
   onReview,
   onAskZavi,
   onSelectChannel,
+  copyOption,
+  onCopyOptionChange,
 }: {
   tasks: Task[];
   onApply: (id: number) => void;
@@ -769,6 +771,8 @@ export default function ChannelPanel({
   onReview: (request: ApprovalRequest) => void;
   onAskZavi: (text: string) => void;
   onSelectChannel?: (tab: AnalyticsTab) => void;
+  copyOption: CopyOptionId;
+  onCopyOptionChange: (option: CopyOptionId) => void;
 }) {
   const [order, setOrder] = useState(() =>
     channelConfigs.map((channel) => channel.id),
@@ -805,8 +809,6 @@ export default function ChannelPanel({
   function isConnected(channel: ChannelConfig): boolean {
     return connectedChannels.includes(channel.id);
   }
-
-  const [copyOption, setCopyOption] = useState<CopyOptionId>("direct");
 
   function connectChannel(channelId: string) {
     setConnectedChannels((prev) =>
@@ -1407,7 +1409,7 @@ export default function ChannelPanel({
               viewAllChannel.id === "meta-ads" ? copyOption : undefined
             }
             onCopyOptionChange={
-              viewAllChannel.id === "meta-ads" ? setCopyOption : undefined
+              viewAllChannel.id === "meta-ads" ? onCopyOptionChange : undefined
             }
             expanded={viewAllExpanded}
             items={viewAllItems.map((item) => ({
