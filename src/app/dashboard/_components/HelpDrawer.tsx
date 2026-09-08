@@ -83,7 +83,7 @@ export default function HelpDrawer() {
         <ul className="mt-3 divide-y divide-zinc-100 rounded-2xl border border-zinc-200 px-4">
           {shortcuts.map(([keys, what]) => (
             <li key={keys} className="flex items-center gap-4 py-3">
-              <kbd className="shrink-0 rounded-lg bg-zinc-100 px-2 py-1 text-xs font-medium text-zinc-800">
+              <kbd className="shrink-0 rounded-lg bg-zinc-100 px-2 py-1 text-sm font-medium text-zinc-800">
                 {keys}
               </kbd>
               <span className="text-sm text-zinc-700">{what}</span>

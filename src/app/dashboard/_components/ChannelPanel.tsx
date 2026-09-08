@@ -7,6 +7,7 @@ import {
   type KeyboardEvent,
 } from "react";
 import {
+  ArrowRight,
   BotMessageSquare,
   Check,
   ChevronDown,
@@ -16,9 +17,11 @@ import {
   Megaphone,
   PanelRightClose,
   PanelRightOpen,
+  Play,
   Radio,
   SlidersHorizontal,
   Sparkles,
+  TrendingUp,
   X,
 } from "lucide-react";
 import {
@@ -39,6 +42,7 @@ import ChannelSummaryDrawer, {
   type ChannelSummary,
 } from "./ChannelSummaryDrawer";
 import type { Tab as AnalyticsTab } from "./AnalyticsPanel";
+import { dailySeries } from "./metrics";
 import type {
   ApprovalKind,
   ApprovalRequest,
@@ -86,21 +90,14 @@ const channelConfigs: ChannelConfig[] = [
     emptyText: "Connect Meta Ads to get campaign ideas",
     summary: {
       headline:
-        "5 optimizations ready — approving all frees ~$85/day and lifts account-wide Purchase ROAS.",
-      points: [
-        "Pause 1 underperforming ad set (Sales campaign · Retargeting – Cart Abandoners)",
-        "Raise budget on 1 capped, high-ROAS ad set (Sales campaign · Acquisition – Prospecting)",
-        "Refresh creative in 1 fatigued ad set (Sales campaign · Retention – Winback)",
-        "Exclude recent purchasers from 3 prospecting ad sets",
-        "Turn on Advantage+ placements for 1 new launch campaign",
-      ],
+        "5 changes ready. Approving all frees ~$85/day from a stalled ad set and should add 30–40 purchases a week.",
     },
     items: [
       {
         id: 1,
         title: "Pause “Retargeting – Cart Abandoners” ad set",
         detail:
-          "Sales campaign · Cost per purchase is 2.4x the campaign average over the last 7 days",
+          "Sales campaign · Cost per purchase is 2.4x the campaign average over Sep 1–7",
         review: {
           why: "Pausing a live ad set stops delivery and spend immediately and can reset pixel/Conversions API learning, so Zavi asks before touching anything live in Ads Manager.",
           plan: [
@@ -108,15 +105,49 @@ const channelConfigs: ChannelConfig[] = [
             "Shift its $85/day budget to the higher-performing “Acquisition – Prospecting” ad set",
             "Re-check cost per purchase after 3 days before permanently archiving it",
           ],
+          impactPeriod: {
+            before: { range: "Sep 1–7", note: "As-is" },
+            after: { range: "Sep 8–14", note: "$85/day moved to Prospecting" },
+          },
+          resultNoun: "purchases",
+          daily: dailySeries("2026-08-09", [
+            { days: 23, spend: 84, costPerResult: 8.21, cpm: 12, ctr: 0.012 },
+            { days: 7, spend: 84, costPerResult: 19.6, cpm: 12.5, ctr: 0.009 },
+          ]),
           impact: [
-            { label: "Cost per purchase", value: "$19.60" },
-            { label: "Campaign avg. cost/purchase", value: "$8.21" },
-            { label: "Daily budget freed", value: "$85" },
+            { label: "Amount spent", value: "$588", before: "$588" },
+            { label: "Cost per result", value: "$10.00", before: "$19.60" },
+            { label: "Purchases", value: "≈59", before: "30" },
           ],
+          creative: {
+            image: "https://picsum.photos/seed/zavi-cart-abandoners/200/200",
+            caption: "Cart Abandoners · carousel ad",
+            kind: "image",
+          },
+          trend: { label: "Cost per purchase", before: "$19.60", after: "$10.00", good: "down" },
+          outcome: "Frees $85/day to fund better-performing ads",
+          evidence: {
+            confidence: "High confidence",
+            rows: [
+              { label: "Spend behind this call", value: "$588", note: "Sep 1–7" },
+              { label: "Purchases in that window", value: "30" },
+              { label: "Cost per purchase trend", value: "$8.21 → $19.60", note: "2.4x higher vs Aug 25–31", tone: "bad" },
+              { label: "Campaign benchmark", value: "$8.21", note: "avg. cost per purchase" },
+              { label: "Estimate based on", value: "Aug 25 – Sep 7 ad set history" },
+            ],
+          },
+          scenario: {
+            positive: "Frees $85/day for the higher-performing Prospecting ad set",
+            negative: "If paused too early, the ad set loses its learning phase and audience data",
+          },
+          reversible: {
+            label: "Reversible anytime",
+            body: "Turn the ad set back on from Ads Manager or the Channel history. Pausing stops delivery only; audience and learning data stay intact.",
+          },
           risk: "Low. Pausing stops delivery only; the ad set, its audience, and learning data stay intact in Ads Manager and can be resumed anytime.",
           undo: "Turn the ad set back on from Ads Manager or the Channel history.",
           sources: [
-            "Ads Manager · Ad Set breakdown (last 7 days)",
+            "Ads Manager · Ad Set breakdown (Sep 1–7)",
             "Campaign cost-per-purchase benchmark",
           ],
         },
@@ -133,15 +164,48 @@ const channelConfigs: ChannelConfig[] = [
             "Monitor cost per purchase and frequency for 3 days",
             "Auto-revert to $120 if cost per purchase rises above $12",
           ],
+          impactPeriod: {
+            before: { range: "Aug 25 – Sep 7", note: "$120/day budget" },
+            after: { range: "Sep 8–21", note: "$180/day budget" },
+          },
+          resultNoun: "purchases",
+          daily: dailySeries("2026-08-09", [
+            { days: 30, spend: 120, costPerResult: 10, cpm: 11.5, ctr: 0.017 },
+          ]),
           impact: [
-            { label: "Purchase ROAS", value: "3.09x" },
-            { label: "Budget change", value: "+$60 / day" },
-            { label: "Est. extra purchases", value: "+6–9 / week" },
+            { label: "Amount spent", value: "$2,520", before: "$1,680" },
+            { label: "Cost per result", value: "$10.30–10.70", before: "$10.00" },
+            { label: "Purchases", value: "235–245", before: "168" },
           ],
-          risk: "Low. The ad set has held a stable cost per purchase for 14 days; the increase is capped and auto-monitored.",
+          creative: {
+            image: "https://picsum.photos/seed/zavi-acquisition-prospecting/200/200",
+            caption: "Acquisition – Prospecting · image ad",
+            kind: "image",
+          },
+          trend: { label: "Daily budget", before: "$120", after: "$180", good: "up" },
+          outcome: "Est. 30–40 more purchases per week, cost per purchase stays under $12",
+          evidence: {
+            confidence: "High confidence",
+            rows: [
+              { label: "Spend behind this call", value: "$1,680", note: "Aug 25 – Sep 7" },
+              { label: "Purchases in that window", value: "168" },
+              { label: "Purchase ROAS", value: "3.09x", note: "stable Aug 25 – Sep 7", tone: "good" },
+              { label: "Delivery cap", value: "Capped by budget", note: "not audience size" },
+              { label: "Estimate based on", value: "3 similar budget increases", note: "this account" },
+            ],
+          },
+          scenario: {
+            positive: "≈235–245 purchases at $180/day, cost per purchase under $12",
+            negative: "Cost per purchase could rise if the audience starts to saturate",
+          },
+          reversible: {
+            label: "Reversible anytime",
+            body: "Lower the daily budget back to $120 from Ads Manager. Zavi auto-reverts if cost per purchase rises above $12.",
+          },
+          risk: "Low. The ad set has held a stable cost per purchase since Aug 25; the increase is capped and auto-monitored.",
           undo: "Lower the ad set's daily budget back to $120 from Ads Manager.",
           sources: [
-            "Ads Manager · Ad Set breakdown (last 14 days)",
+            "Ads Manager · Ad Set breakdown (Aug 25 – Sep 7)",
             "Delivery & budget pacing insights",
           ],
         },
@@ -150,7 +214,7 @@ const channelConfigs: ChannelConfig[] = [
         id: 3,
         title: "Refresh creative in “Retention – Winback” ad set",
         detail:
-          "Sales campaign · Frequency has crossed 4.2 and link CTR dropped 38% week over week",
+          "Sales campaign · Frequency has crossed 4.2 and link CTR dropped 38% from Aug 25–31 to Sep 1–7",
         review: {
           why: "Publishing new ad creative changes what your audience sees on Facebook and Instagram immediately, so Zavi drafts it for your review before it goes live in Ads Manager.",
           plan: [
@@ -160,17 +224,52 @@ const channelConfigs: ChannelConfig[] = [
           ],
           preview: {
             label: "New creative angle",
-            body: "\"Still thinking about it?\" carousel ad featuring the 3 most-viewed product shots from the last 30 days, with a 10% winback code.",
+            body: "\"Still thinking about it?\" carousel ad featuring the 3 most-viewed product shots from Aug 9 – Sep 7, with a 10% winback code.",
           },
+          creative: {
+            image: "https://picsum.photos/seed/zavi-winback-carousel/200/200",
+            caption: "\"Still thinking about it?\" carousel ad",
+            kind: "video",
+          },
+          impactPeriod: {
+            before: { range: "Aug 9 – Sep 7", note: "Old creative" },
+            after: { range: "Sep 8 – Oct 7", note: "New creative" },
+          },
+          resultNoun: "purchases",
+          daily: dailySeries("2026-08-09", [
+            { days: 16, spend: 41.33, costPerResult: 17, cpm: 10, ctr: 0.012 },
+            { days: 7, spend: 41.33, costPerResult: 22, cpm: 10.5, ctr: 0.01 },
+            { days: 7, spend: 41.33, costPerResult: 30, cpm: 11, ctr: 0.0062 },
+          ]),
           impact: [
-            { label: "Link CTR", value: "0.62%" },
-            { label: "Frequency", value: "4.2" },
-            { label: "Expected link CTR", value: "1.1–1.4%" },
+            { label: "Amount spent", value: "$1,240", before: "$1,240" },
+            { label: "Cost per result", value: "$10–12", before: "$20.00" },
+            { label: "Purchases", value: "100–120", before: "62" },
           ],
+          trend: { label: "Link CTR", before: "0.62%", after: "1.1–1.4%", good: "up" },
+          outcome: "Up to 2x higher click-through expected",
+          evidence: {
+            confidence: "Directional",
+            rows: [
+              { label: "Spend behind this call", value: "$1,240", note: "Aug 9 – Sep 7" },
+              { label: "Purchases in that window", value: "62" },
+              { label: "7-day frequency", value: "4.2", note: "was 2.1 on Aug 17", tone: "bad" },
+              { label: "Link CTR trend", value: "1.00% → 0.62%", note: "Aug 25–31 → Sep 1–7", tone: "bad" },
+              { label: "Estimate based on", value: "4 past refreshes", note: "this account" },
+            ],
+          },
+          scenario: {
+            positive: "≈100–120 purchases at the same $1,240",
+            negative: "New ads enter learning; 5–7 noisy days",
+          },
+          reversible: {
+            label: "Reversible with a cost",
+            body: "Turn the new ads off and re-enable the previous ad from version history. Adding ads to a live ad set can restart the learning phase, so the ad set may run unstable for 5–7 days either way.",
+          },
           risk: "Low. Same audience, placements, and budget; only the ad creative changes.",
           undo: "Turn off the new ads and re-enable the previous ad from the ad set's version history.",
           sources: [
-            "Ads Manager · Ad breakdown (last 30 days)",
+            "Ads Manager · Ad breakdown (Aug 9 – Sep 7)",
             "Frequency & link CTR fatigue signals",
           ],
         },
@@ -187,11 +286,44 @@ const channelConfigs: ChannelConfig[] = [
             "Apply it to all 3 active prospecting ad sets in the Sales campaign",
             "Re-check wasted spend after 7 days",
           ],
+          impactPeriod: {
+            before: { range: "Sep 1–7", note: "No exclusion" },
+            after: { range: "Sep 8–14", note: "Purchasers excluded" },
+          },
+          resultNoun: "purchases",
+          daily: dailySeries("2026-08-09", [
+            { days: 30, spend: 250, costPerResult: 14, cpm: 12, ctr: 0.015 },
+          ]),
           impact: [
-            { label: "Wasted spend / week", value: "~$210" },
-            { label: "Audience overlap", value: "12%" },
-            { label: "Ad sets affected", value: "3" },
+            { label: "Amount spent", value: "$1,540", before: "$1,750" },
+            { label: "Cost per result", value: "$12.32", before: "$14.00" },
+            { label: "Purchases", value: "125", before: "125" },
           ],
+          creative: {
+            image: "https://picsum.photos/seed/zavi-prospecting-exclusion/200/200",
+            caption: "Prospecting ad sets · audience exclusion",
+            kind: "image",
+          },
+          trend: { label: "Wasted spend / week", before: "$210", after: "$0", good: "down" },
+          outcome: "Recovers ~$210/week in wasted spend",
+          evidence: {
+            confidence: "Directional",
+            rows: [
+              { label: "Spend behind this call", value: "$1,750", note: "Sep 1–7, 3 ad sets" },
+              { label: "Wasted spend detected", value: "$210", note: "12% of prospecting spend", tone: "bad" },
+              { label: "Audience overlap", value: "12%", note: "already converted Aug 9 – Sep 7" },
+              { label: "Ad sets affected", value: "3", note: "all active prospecting ad sets" },
+              { label: "Estimate based on", value: "Pixel / Conversions API events" },
+            ],
+          },
+          scenario: {
+            positive: "Recovers ~$210/week without losing purchases",
+            negative: "If the audience list is stale, some in-market buyers could be excluded",
+          },
+          reversible: {
+            label: "Reversible anytime",
+            body: "Remove the custom audience exclusion from each ad set's Audience settings. Existing ad sets and performance history are unaffected.",
+          },
           risk: "Low. Exclusions only narrow reach; existing ad sets, creative, and performance history are unaffected.",
           undo: "Remove the custom audience exclusion from each ad set's Audience settings.",
           sources: [
@@ -212,11 +344,44 @@ const channelConfigs: ChannelConfig[] = [
             "Keep budget and bid strategy unchanged",
             "Compare delivery and cost per purchase after 5 days",
           ],
+          impactPeriod: {
+            before: { range: "Sep 3–7", note: "60% pacing" },
+            after: { range: "Sep 8–12", note: "Full pacing" },
+          },
+          resultNoun: "purchases",
+          daily: dailySeries("2026-09-03", [
+            { days: 5, spend: 120, costPerResult: 30, cpm: 14, ctr: 0.011 },
+          ]),
           impact: [
-            { label: "Current pacing", value: "60% of budget" },
-            { label: "Placements live", value: "2 of 6 (Feed, Stories)" },
-            { label: "Expected pacing", value: "95–100%" },
+            { label: "Amount spent", value: "$950–1,000", before: "$600" },
+            { label: "Cost per result", value: "$30.00", before: "$30.00" },
+            { label: "Purchases", value: "32–33", before: "20" },
           ],
+          creative: {
+            image: "https://picsum.photos/seed/zavi-launch-q4-promo/200/200",
+            caption: "Launch – Q4 Promo · placement expansion",
+            kind: "video",
+          },
+          trend: { label: "Budget pacing", before: "60%", after: "95–100%", good: "up" },
+          outcome: "Full budget delivery, more reach for the same spend",
+          evidence: {
+            confidence: "At risk",
+            rows: [
+              { label: "Spend behind this call", value: "$600", note: "Sep 3–7 (launched Sep 3)" },
+              { label: "Purchases in that window", value: "20" },
+              { label: "Budget pacing", value: "60%", note: "manual placements limit delivery", tone: "bad" },
+              { label: "Placements live", value: "2 of 6", note: "Feed, Stories only" },
+              { label: "Estimate based on", value: "Meta's Advantage+ recommendation" },
+            ],
+          },
+          scenario: {
+            positive: "≈32–33 purchases at full pacing, same cost per result",
+            negative: "New placements may need 3–5 days to stabilize cost per purchase",
+          },
+          reversible: {
+            label: "Reversible anytime",
+            body: "Switch back to manual placements from the ad set's Placements settings. Budget and bid strategy stay unchanged either way.",
+          },
           risk: "Low. Advantage+ placements are reversible and are Meta's own delivery recommendation for this ad set.",
           undo: "Switch back to manual placements from the ad set's Placements settings.",
           sources: ["Ads Manager · Delivery insights"],
@@ -533,7 +698,7 @@ function UpgradePill({
           aria-controls={id}
           onClick={toggle}
           className={`flex shrink-0 cursor-pointer items-center gap-1.5 rounded-full bg-zinc-100 font-semibold text-zinc-700 transition-colors duration-200 hover:bg-zinc-200 ${
-            compact ? "h-7 px-2.5 text-xs" : "h-8 px-3 text-sm"
+            compact ? "h-7 px-2.5 text-sm" : "h-8 px-3 text-sm"
           }`}
         >
           <Lock className="h-3.5 w-3.5" aria-hidden="true" />
@@ -543,7 +708,7 @@ function UpgradePill({
     >
       {(close) => (
         <div className="p-1">
-          <p className="text-xs font-semibold tracking-wider text-zinc-500 uppercase">
+          <p className="text-sm font-semibold tracking-wider text-zinc-500 uppercase">
             Unlock this agent
           </p>
           <p className="mt-1 text-sm font-semibold text-zinc-900">
@@ -566,7 +731,7 @@ function UpgradePill({
                 onUpgrade();
                 close();
               }}
-              className="mt-3 w-full cursor-pointer rounded-lg bg-zinc-900 px-3 py-1.5 text-xs font-semibold text-white transition-colors duration-200 hover:bg-zinc-700"
+              className="mt-3 w-full cursor-pointer rounded-lg bg-zinc-900 px-3 py-1.5 text-sm font-semibold text-white transition-colors duration-200 hover:bg-zinc-700"
             >
               <span className="flex items-center justify-center gap-1.5">
                 <Crown className="h-3.5 w-3.5" aria-hidden="true" />
@@ -621,6 +786,7 @@ export default function ChannelPanel({
     itemId: number;
   } | null>(null);
   const [viewAllId, setViewAllId] = useState<string | null>(null);
+  const [viewAllExpanded, setViewAllExpanded] = useState(true);
   const [connectedChannels, setConnectedChannels] = useState<string[]>(() =>
     channelConfigs.map((channel) => channel.id).filter((id) => id !== "linkedin"),
   );
@@ -788,7 +954,7 @@ export default function ChannelPanel({
           <span className="relative">
             <Radio className="h-5 w-5 text-zinc-700" aria-hidden="true" />
             {pendingCount > 0 && (
-              <span className="absolute -top-2 -right-2 flex h-4 min-w-4 items-center justify-center rounded-full bg-emerald-500 px-1 text-[10px] font-semibold text-white">
+              <span className="absolute -top-2 -right-2 flex h-5 min-w-5 items-center justify-center rounded-full bg-emerald-500 px-1 text-sm font-semibold text-white">
                 {pendingCount}
               </span>
             )}
@@ -848,7 +1014,7 @@ export default function ChannelPanel({
           >
             {() => (
               <div className="p-1">
-                <p className="text-xs font-semibold tracking-wider text-zinc-500 uppercase">
+                <p className="text-sm font-semibold tracking-wider text-zinc-500 uppercase">
                   Channel settings
                 </p>
                 <label className="mt-2 flex cursor-pointer items-center justify-between gap-3 text-sm text-zinc-800">
@@ -869,7 +1035,7 @@ export default function ChannelPanel({
                     />
                   </button>
                 </label>
-                <p className="mt-2 text-xs leading-relaxed text-zinc-500">
+                <p className="mt-2 text-sm leading-relaxed text-zinc-500">
                   Drag the grip on any row to reorder your agents.
                 </p>
               </div>
@@ -991,7 +1157,7 @@ export default function ChannelPanel({
                       event.stopPropagation();
                       connectChannel(channel.id);
                     }}
-                    className="shrink-0 cursor-pointer rounded-lg bg-zinc-900 px-3 py-1.5 text-xs font-semibold text-white transition-colors duration-200 hover:bg-zinc-700"
+                    className="shrink-0 cursor-pointer rounded-lg bg-zinc-900 px-3 py-1.5 text-sm font-semibold text-white transition-colors duration-200 hover:bg-zinc-700"
                   >
                     Connect
                   </button>
@@ -1003,7 +1169,7 @@ export default function ChannelPanel({
                       event.stopPropagation();
                       setViewAllId(channel.id);
                     }}
-                    className="shrink-0 cursor-pointer rounded-lg border border-zinc-200 px-3 py-1.5 text-xs font-semibold text-zinc-700 transition-colors duration-200 hover:bg-zinc-100"
+                    className="shrink-0 cursor-pointer rounded-lg border border-zinc-200 px-3 py-1.5 text-sm font-semibold text-zinc-700 transition-colors duration-200 hover:bg-zinc-100"
                   >
                     View all
                   </button>
@@ -1018,7 +1184,7 @@ export default function ChannelPanel({
 
               {isExpanded && (
                 <div className="bg-zinc-50/60 px-4 py-3">
-                  <p className="mb-2 text-xs font-medium text-zinc-500">
+                  <p className="mb-2 text-sm font-medium text-zinc-500">
                     {subtitle(channel, items)}
                   </p>
                   {!connected ? (
@@ -1045,16 +1211,52 @@ export default function ChannelPanel({
                           key={item.id}
                           className="rounded-2xl border border-zinc-200 bg-white p-3.5"
                         >
-                          <div className="min-w-0">
-                            <p className="text-[15px] leading-snug font-semibold text-zinc-900">
-                              {item.title}
-                            </p>
-                            <p className="mt-0.5 truncate text-sm text-zinc-500">
-                              {channel.name} · {item.detail}
-                            </p>
+                          <div className="flex items-start gap-3">
+                            {item.review.creative && (
+                              <div className="relative h-12 w-12 shrink-0 overflow-hidden rounded-lg bg-zinc-100">
+                                <img
+                                  src={item.review.creative.image}
+                                  alt={item.review.creative.caption}
+                                  className="h-full w-full object-cover"
+                                />
+                                {item.review.creative.kind === "video" && (
+                                  <div className="absolute inset-0 flex items-center justify-center bg-black/25">
+                                    <Play className="h-4 w-4 fill-white text-white" aria-hidden="true" />
+                                  </div>
+                                )}
+                              </div>
+                            )}
+                            <div className="min-w-0 flex-1">
+                              <p className="text-[15px] leading-snug font-semibold text-zinc-900">
+                                {item.title}
+                              </p>
+                              <p className="mt-0.5 line-clamp-2 text-sm text-zinc-600">
+                                {channel.name} · {item.detail}
+                              </p>
+                            </div>
                           </div>
+                          {item.review.trend && (
+                            <div className="mt-3 flex items-center gap-2 rounded-xl bg-zinc-100 px-3 py-2 text-sm">
+                              <span className="font-medium text-zinc-600">
+                                {item.review.trend.label}
+                              </span>
+                              <span className="ml-auto flex items-center gap-1.5 font-bold text-zinc-900">
+                                <span className="text-zinc-500 line-through decoration-zinc-400">
+                                  {item.review.trend.before}
+                                </span>
+                                <ArrowRight className="h-3.5 w-3.5 shrink-0 text-zinc-500" aria-hidden="true" />
+                                {item.review.trend.after}
+                              </span>
+                            </div>
+                          )}
+                          {item.review.outcome && (
+                            <p className="mt-2 flex items-center gap-1.5 text-sm font-semibold text-emerald-700">
+                              <TrendingUp className="h-4 w-4 shrink-0" aria-hidden="true" />
+                              {item.review.outcome}
+                            </p>
+                          )}
                           {isLocked ? (
-                            <p className="mt-3 flex items-center gap-1.5 text-xs text-zinc-500">
+                            <p className="mt-3 flex items-center gap-1.5 text-sm text-zinc-500">
                               <Lock className="h-3 w-3" aria-hidden="true" />
                               Upgrade to let this agent act on it
                             </p>
@@ -1116,7 +1318,7 @@ export default function ChannelPanel({
                     </ul>
                   )}
                   {isLocked && items.length > 0 && (
-                    <p className="mt-3 text-xs text-zinc-500">
+                    <p className="mt-3 text-sm text-zinc-500">
                       {items.length} {noun} waiting behind the Pro plan.
                     </p>
                   )}
@@ -1150,7 +1352,13 @@ export default function ChannelPanel({
       <Drawer
         open={viewAllChannel !== undefined}
         title={viewAllChannel ? `${viewAllChannel.name} — all actions` : "All actions"}
-        onClose={() => setViewAllId(null)}
+        onClose={() => {
+          setViewAllId(null);
+          setViewAllExpanded(true);
+        }}
+        width={viewAllExpanded ? "max-w-[1600px]" : "max-w-2xl"}
+        expanded={viewAllExpanded}
+        onToggleExpand={() => setViewAllExpanded((value) => !value)}
       >
         {viewAllChannel && (
           <ChannelSummaryDrawer
@@ -1159,10 +1367,12 @@ export default function ChannelPanel({
             icon={viewAllChannel.icon}
             glyph={viewAllChannel.glyph}
             summary={viewAllChannel.summary}
+            expanded={viewAllExpanded}
             items={viewAllItems.map((item) => ({
               id: item.id,
               title: item.title,
               detail: item.detail,
+              review: item.review,
             }))}
             onApprove={(id) => {
               const item = viewAllItems.find((entry) => entry.id === id);

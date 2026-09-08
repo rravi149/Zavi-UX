@@ -1,6 +1,13 @@
 "use client";
 
-import { Fragment, useCallback, useMemo, useRef, useState } from "react";
+import {
+  Fragment,
+  useCallback,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+} from "react";
 import SidebarPanel from "./SidebarPanel";
 import ChatPanel, {
   buildThreadSeeds,
@@ -23,6 +30,12 @@ import HelpDrawer from "./HelpDrawer";
 import ApprovalDrawer from "./ApprovalDrawer";
 import { PanelDndProvider, PanelSlot, type PanelDnd } from "./Panel";
 import { initialOnboardingDone, onboardingSteps } from "./onboarding";
+import { focusAreaOptions } from "../../start/_components/data";
+import type {
+  Competitor,
+  FocusAreaId,
+  OnboardingData,
+} from "../../start/_components/types";
 import type {
   ApprovalRequest,
   DrawerKind,
@@ -167,6 +180,7 @@ export default function Workspace() {
   const [goals, setGoals] = useState<Goal[]>(initialGoals);
   const [plan, setPlan] = useState<Plan>("free");
   const [approval, setApproval] = useState<ApprovalRequest | null>(null);
+  const [approvalExpanded, setApprovalExpanded] = useState(true);
   const [brainOpen, setBrainOpen] = useState(false);
   const [settings, setSettings] = useState<{
     section?: SettingsSection;
@@ -182,6 +196,96 @@ export default function Workspace() {
   const nextTaskId = useRef(100);
   const nextGoalId = useRef(100);
   const chatRef = useRef<ChatPanelHandle>(null);
+
+  useEffect(() => {
+    let raw: string | null = null;
+    try {
+      raw = window.localStorage.getItem("zavi:onboarding");
+    } catch {
+      return;
+    }
+    if (!raw) return;
+    window.localStorage.removeItem("zavi:onboarding");
+
+    let payload: Partial<OnboardingData>;
+    try {
+      payload = JSON.parse(raw);
+    } catch {
+      return;
+    }
+
+    const completedSteps: string[] = [];
+    const notes: Record<string, string> = {};
+
+    if (payload.companyName) {
+      setWorkspace(payload.companyName);
+      completedSteps.push("company");
+      const companyNote = [
+        payload.companyWebsite ? `Website: ${payload.companyWebsite}` : null,
+        payload.description || null,
+      ]
+        .filter(Boolean)
+        .join(" — ");
+      if (companyNote) notes.company = companyNote;
+    }
+
+    if (
+      (payload.focusAreas && payload.focusAreas.length > 0) ||
+      payload.primaryGoal ||
+      (payload.competitors && payload.competitors.length > 0)
+    ) {
+      const focusLabel = (id: FocusAreaId) =>
+        focusAreaOptions.find((option) => option.id === id)?.label ?? id;
+
+      const focusNote =
+        payload.focusAreas && payload.focusAreas.length > 0
+          ? `Focus areas: ${payload.focusAreas.map(focusLabel).join(", ")}.`
+          : null;
+      const primaryGoalNote = payload.primaryGoal
+        ? `Primary goal: ${focusLabel(payload.primaryGoal)}.`
+        : null;
+      const competitorNote =
+        payload.competitors && payload.competitors.length > 0
+          ? `Competitors: ${payload.competitors
+              .map((competitor: Competitor) => competitor.name)
+              .join(", ")}.`
+          : null;
+
+      const growthNote = [focusNote, primaryGoalNote, competitorNote]
+        .filter(Boolean)
+        .join(" ");
+
+      completedSteps.push("gtm-growth");
+      if (growthNote) notes["gtm-growth"] = growthNote;
+
+      if (primaryGoalNote) {
+        completedSteps.push("metrics");
+        notes.metrics = primaryGoalNote;
+      }
+    }
+
+    if (payload.connectedIntegrations && payload.connectedIntegrations.length > 0) {
+      completedSteps.push("data-source");
+      notes["data-source"] = `Connected: ${payload.connectedIntegrations.join(", ")}.`;
+    }
+
+    if (payload.teamEmails && payload.teamEmails.length > 0) {
+      completedSteps.push("team-roles");
+      notes["team-roles"] = `Invited: ${payload.teamEmails.join(", ")}.`;
+    }
+
+    if (completedSteps.length > 0) {
+      setOnboardingDone((prev) => [
+        ...prev,
+        ...completedSteps.filter((id) => !prev.includes(id)),
+      ]);
+    }
+    if (Object.keys(notes).length > 0) {
+      setOnboardingNotes((prev) => ({ ...prev, ...notes }));
+    }
+    // Runs once on mount to absorb answers from the /start wizard, if any.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   const addTask = useCallback((title: string, source: TaskSource) => {
     setTasks((prev) => [
@@ -231,7 +335,10 @@ export default function Workspace() {
     (request: ApprovalRequest) => setApproval(request),
     [],
   );
-  const closeApproval = useCallback(() => setApproval(null), []);
+  const closeApproval = useCallback(() => {
+    setApproval(null);
+    setApprovalExpanded(true);
+  }, []);
   const askZavi = useCallback((text: string) => {
     setSeed({ text, nonce: Date.now() });
   }, []);
@@ -515,7 +622,12 @@ export default function Workspace() {
           <GrowthPlanPanel onOpenGoals={() => setDrawer("goals")} />
         );
       case "growthChat":
-        return <GrowthChatPanel />;
+        return (
+          <GrowthChatPanel
+            workspace={workspace}
+            businessSummary={onboardingNotes.company}
+          />
+        );
       default:
         return null;
     }
@@ -654,11 +766,15 @@ export default function Workspace() {
         open={approval !== null}
         title="Action details"
         onClose={closeApproval}
+        width={approvalExpanded ? "max-w-[min(80vw,1280px)]" : "max-w-2xl"}
+        expanded={approvalExpanded}
+        onToggleExpand={() => setApprovalExpanded((value) => !value)}
       >
         {approval && (
           <ApprovalDrawer
             key={approval.key}
             request={approval}
+            expanded={approvalExpanded}
             onClose={closeApproval}
             onAskZavi={askZavi}
           />

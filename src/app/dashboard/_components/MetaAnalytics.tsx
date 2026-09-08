@@ -98,7 +98,7 @@ function Delta({ value }: { value: number }) {
   const Icon = up ? ArrowUpRight : ArrowDownRight;
   return (
     <span
-      className={`flex items-center gap-0.5 text-xs font-medium ${
+      className={`flex items-center gap-0.5 text-sm font-medium ${
         up ? "text-emerald-700" : "text-red-600"
       }`}
     >
@@ -366,7 +366,7 @@ function MetaDashboard({ range }: { range: string }) {
           <h3 className="text-[15px] font-semibold text-zinc-900">
             Last 7 days
           </h3>
-          <span className="flex items-center gap-1.5 rounded-full bg-emerald-50 px-2 py-0.5 text-xs font-medium text-emerald-700">
+          <span className="flex items-center gap-1.5 rounded-full bg-emerald-50 px-2 py-0.5 text-sm font-medium text-emerald-700">
             <span
               className="h-1.5 w-1.5 rounded-full bg-emerald-500"
               aria-hidden="true"
@@ -444,7 +444,7 @@ function MetaDashboard({ range }: { range: string }) {
                 <SlidersHorizontal className="h-4 w-4" aria-hidden="true" />
                 Filter Data
                 {hidden.length > 0 && (
-                  <span className="rounded-full bg-zinc-900 px-1.5 text-[11px] font-semibold text-white">
+                  <span className="rounded-full bg-zinc-900 px-2 text-sm font-semibold text-white">
                     {visible.length}
                   </span>
                 )}
@@ -453,7 +453,7 @@ function MetaDashboard({ range }: { range: string }) {
           >
             {() => (
               <div className="p-1">
-                <p className="text-xs font-semibold tracking-wider text-zinc-500 uppercase">
+                <p className="text-sm font-semibold tracking-wider text-zinc-500 uppercase">
                   Strategies
                 </p>
                 <ul className="mt-2 space-y-1">
@@ -683,7 +683,7 @@ function MetaDashboard({ range }: { range: string }) {
                   key={key}
                   className="rounded-xl border border-zinc-200 bg-white px-3 py-2.5"
                 >
-                  <dt className="text-xs text-zinc-500">
+                  <dt className="text-sm text-zinc-500">
                     {metrics[key].label}
                   </dt>
                   <dd className="mt-0.5 text-sm font-semibold text-zinc-900 tabular-nums">
@@ -820,7 +820,7 @@ function StatusPill({ status }: { status: AdSetStatus }) {
   const style = statusStyles[status];
   return (
     <span
-      className={`inline-flex items-center gap-1.5 rounded-full px-2 py-0.5 text-xs font-medium ${style.pill}`}
+      className={`inline-flex items-center gap-1.5 rounded-full px-2 py-0.5 text-sm font-medium ${style.pill}`}
     >
       <span
         className={`h-1.5 w-1.5 rounded-full ${style.dot}`}
@@ -940,7 +940,7 @@ const adSetColumns: Column[] = [
     render: (a) => (
       <span className="block">
         <span className="block text-zinc-900">{formatUsd(a.budget)}</span>
-        <span className="block text-xs text-zinc-500">Daily</span>
+        <span className="block text-sm text-zinc-500">Daily</span>
       </span>
     ),
   },
@@ -1094,7 +1094,7 @@ function AdSetsTable() {
 
       <div className="mt-4 overflow-x-auto rounded-2xl border border-zinc-200 bg-white">
         <table className="w-full min-w-max text-sm">
-          <thead className="bg-zinc-50 text-xs text-zinc-600">
+          <thead className="bg-zinc-50 text-sm text-zinc-600">
             <tr>
               <th scope="col" className="w-10 px-3 py-3">
                 <input
@@ -1211,7 +1211,7 @@ function AdSetsTable() {
                         <p className="font-medium whitespace-nowrap text-zinc-900">
                           {adSet.name}
                         </p>
-                        <p className="text-xs whitespace-nowrap text-zinc-500">
+                        <p className="text-sm whitespace-nowrap text-zinc-500">
                           Results from {adSet.ads} ad
                           {adSet.ads === 1 ? "" : "s"}
                         </p>

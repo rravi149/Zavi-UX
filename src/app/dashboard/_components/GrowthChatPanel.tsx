@@ -2,7 +2,9 @@
 
 import { useEffect, useRef, useState, type FormEvent } from "react";
 import {
+  ArrowRight,
   Copy,
+  Loader2,
   Mic,
   Plus,
   Send,
@@ -20,6 +22,38 @@ const reactionButtons = [
   { kind: "up", icon: ThumbsUp, label: "Helpful" },
   { kind: "down", icon: ThumbsDown, label: "Not helpful" },
 ] as const;
+
+type IntakeQuestion = {
+  id: string;
+  prompt: string;
+  options: string[];
+};
+
+const intakeQuestions: IntakeQuestion[] = [
+  {
+    id: "improve",
+    prompt: "If one thing got better over the next 3 months, what should it be?",
+    options: [
+      "More of them actually buying",
+      "More of them coming back",
+      "More of them signing up in the first place",
+    ],
+  },
+  {
+    id: "leak",
+    prompt: "Where do you lose people?",
+    options: [
+      "They look, but don't buy",
+      "They sign up, but don't stick around",
+      "They never make it to the page",
+    ],
+  },
+  {
+    id: "source",
+    prompt: "Think about the last handful of customers. How did they find you?",
+    options: ["Saw us on social", "Someone referred them", "Found us searching"],
+  },
+];
 
 const seedChat: ChatEntry[] = [
   {
@@ -40,7 +74,18 @@ const suggestedPrompts = [
   "Which channel should I connect next?",
 ];
 
-export default function GrowthChatPanel() {
+export default function GrowthChatPanel({
+  workspace = "your business",
+  businessSummary,
+}: {
+  workspace?: string;
+  businessSummary?: string;
+} = {}) {
+  const [phase, setPhase] = useState<"intake" | "generating" | "chat">("intake");
+  const [answers, setAnswers] = useState<Record<string, string>>({});
+  const [customAnswer, setCustomAnswer] = useState("");
+  const intakeListRef = useRef<HTMLDivElement>(null);
+
   const [chat, setChat] = useState<ChatEntry[]>(seedChat);
   const [draft, setDraft] = useState("");
   const [creditsDismissed, setCreditsDismissed] = useState(false);
@@ -48,6 +93,46 @@ export default function GrowthChatPanel() {
   const listRef = useRef<HTMLDivElement>(null);
   const textareaRef = useRef<HTMLTextAreaElement>(null);
   const nextId = useRef(chat.length + 1);
+
+  const answeredCount = Object.keys(answers).length;
+  const currentQuestion = intakeQuestions[answeredCount];
+  const intakeComplete = answeredCount === intakeQuestions.length;
+
+  const [sidebarInset, setSidebarInset] = useState(0);
+
+  useEffect(() => {
+    if (phase === "chat") return;
+    const el = document.querySelector<HTMLElement>('[data-panel="sidebar"]');
+    if (!el) return;
+    const update = () => setSidebarInset(el.getBoundingClientRect().right + 4);
+    update();
+    const observer = new ResizeObserver(update);
+    observer.observe(el);
+    window.addEventListener("resize", update);
+    return () => {
+      observer.disconnect();
+      window.removeEventListener("resize", update);
+    };
+  }, [phase]);
+
+  useEffect(() => {
+    if (phase !== "intake") return;
+    const el = intakeListRef.current;
+    if (el) el.scrollTop = el.scrollHeight;
+  }, [phase, answeredCount]);
+
+  useEffect(() => {
+    if (phase !== "generating") return;
+    const timer = setTimeout(() => setPhase("chat"), 1600);
+    return () => clearTimeout(timer);
+  }, [phase]);
+
+  function answerQuestion(id: string, value: string) {
+    const text = value.trim();
+    if (!text) return;
+    setAnswers((prev) => ({ ...prev, [id]: text }));
+    setCustomAnswer("");
+  }
 
   useEffect(() => {
     const el = listRef.current;
@@ -83,6 +168,133 @@ export default function GrowthChatPanel() {
 
   function copyMessage(text: string) {
     void navigator.clipboard?.writeText(text.replace(/\*\*/g, ""));
+  }
+
+  if (phase === "intake" || phase === "generating") {
+    const openingLine = businessSummary
+      ? `Here's what I have: ${workspace} — ${businessSummary}`
+      : `Here's what I have: ${workspace} is set up and ready to go.`;
+
+    return (
+      <div
+        className="fixed inset-y-1 right-1 z-50 flex flex-col overflow-hidden rounded-2xl border border-[#F0F0F0] bg-[#f9f9f9]"
+        style={{ left: sidebarInset || undefined }}
+      >
+        <div className="flex h-16 shrink-0 items-center gap-3 border-b border-zinc-200 bg-white px-6 sm:px-10">
+          <ZaviLogo size={28} />
+          <div className="min-w-0 flex-1">
+            <h2 className="text-[17px] font-semibold text-zinc-900">
+              Chief Growth Officer
+            </h2>
+            <p className="truncate text-sm text-zinc-500">
+              {phase === "generating" ? "Reading your data…" : "Ready to look at your data"}
+            </p>
+          </div>
+          <div className="flex shrink-0 items-center gap-1.5" aria-hidden="true">
+            {intakeQuestions.map((q, index) => (
+              <span
+                key={q.id}
+                className={`h-1 w-6 rounded-full transition-colors duration-300 ${
+                  index < answeredCount ? "bg-zinc-900" : "bg-zinc-200"
+                }`}
+              />
+            ))}
+          </div>
+        </div>
+
+        <div
+          ref={intakeListRef}
+          className="min-h-0 flex-1 overflow-y-auto px-6 py-10 sm:px-10"
+        >
+          <div className="mx-auto max-w-2xl space-y-4">
+            <div className="[animation:step-in_320ms_ease-out_both] rounded-2xl border border-zinc-200 bg-white px-5 py-3.5 text-[15px] leading-relaxed text-zinc-700">
+              {openingLine}
+            </div>
+
+            {intakeQuestions.slice(0, answeredCount + 1).map((question, index) => {
+              const answered = answers[question.id];
+              return (
+                <div key={question.id} className="space-y-3">
+                  <div className="[animation:step-in_320ms_ease-out_both] rounded-2xl border border-zinc-200 bg-white px-5 py-3.5 text-[15px] leading-relaxed text-zinc-700">
+                    {question.prompt}
+                  </div>
+
+                  {answered ? (
+                    <div className="flex justify-end [animation:step-in_250ms_ease-out_both]">
+                      <div className="max-w-[80%] rounded-full bg-zinc-900 px-5 py-2.5 text-[14px] font-medium text-white">
+                        {answered}
+                      </div>
+                    </div>
+                  ) : (
+                    index === answeredCount && (
+                      <div className="flex flex-col items-end gap-2 [animation:step-in_250ms_ease-out_both]">
+                        <div className="flex flex-wrap justify-end gap-2">
+                          {question.options.map((option) => (
+                            <button
+                              key={option}
+                              type="button"
+                              onClick={() => answerQuestion(question.id, option)}
+                              className="cursor-pointer rounded-full border border-zinc-300 bg-white px-4 py-2 text-[13.5px] font-medium text-zinc-800 transition-colors duration-150 hover:border-zinc-900 hover:bg-zinc-50"
+                            >
+                              {option}
+                            </button>
+                          ))}
+                        </div>
+                        <form
+                          className="flex w-full max-w-[85%] items-center gap-2"
+                          onSubmit={(event) => {
+                            event.preventDefault();
+                            answerQuestion(question.id, customAnswer);
+                          }}
+                        >
+                          <input
+                            type="text"
+                            value={customAnswer}
+                            onChange={(event) => setCustomAnswer(event.target.value)}
+                            placeholder="Or type your own answer…"
+                            className="w-full rounded-full border border-zinc-200 bg-white px-4 py-2 text-[13.5px] text-zinc-800 placeholder:text-zinc-400 focus:border-zinc-400 focus:outline-none"
+                          />
+                        </form>
+                      </div>
+                    )
+                  )}
+                </div>
+              );
+            })}
+
+            {intakeComplete && phase === "intake" && (
+              <div className="[animation:step-in_320ms_ease-out_both] rounded-2xl border-2 border-zinc-900 bg-white p-5">
+                <p className="text-[15px] leading-relaxed text-zinc-900">
+                  That&apos;s what I needed. Now let me read your funnel, your
+                  connected data and your site.
+                </p>
+                <button
+                  type="button"
+                  onClick={() => setPhase("generating")}
+                  className="mt-4 flex cursor-pointer items-center gap-2 rounded-full bg-zinc-900 px-5 py-2.5 text-[14px] font-semibold text-white transition-colors duration-200 hover:bg-zinc-700"
+                >
+                  Build my growth strategy
+                  <ArrowRight className="h-4 w-4" />
+                </button>
+                <p className="mt-3 text-sm text-zinc-500">
+                  This one takes a couple of minutes — it&apos;s the part that
+                  actually reads your data.
+                </p>
+              </div>
+            )}
+
+            {phase === "generating" && (
+              <div className="flex items-center gap-3 rounded-2xl border border-zinc-200 bg-white px-5 py-4 [animation:step-in_320ms_ease-out_both]">
+                <Loader2 className="h-4 w-4 shrink-0 animate-spin text-zinc-500" aria-hidden="true" />
+                <p className="text-[14px] text-zinc-600">
+                  Reading your funnel, connected data, and site…
+                </p>
+              </div>
+            )}
+          </div>
+        </div>
+      </div>
+    );
   }
 
   return (
@@ -204,7 +416,7 @@ export default function GrowthChatPanel() {
                 setDraft(prompt);
                 textareaRef.current?.focus();
               }}
-              className="shrink-0 cursor-pointer rounded-lg border border-zinc-200 bg-white px-2.5 py-1 text-xs font-medium text-zinc-700 transition-colors duration-200 hover:bg-zinc-50"
+              className="shrink-0 cursor-pointer rounded-lg border border-zinc-200 bg-white px-2.5 py-1 text-sm font-medium text-zinc-700 transition-colors duration-200 hover:bg-zinc-50"
             >
               {prompt}
             </button>

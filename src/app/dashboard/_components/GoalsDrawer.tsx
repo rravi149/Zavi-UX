@@ -83,7 +83,7 @@ const statusStyles: Record<Status, { label: string; className: string }> = {
 
 function ChannelAvatar({ channel }: { channel: GoalChannel }) {
   const base =
-    "flex h-8 w-8 items-center justify-center rounded-full text-xs font-bold ring-2 ring-white";
+    "flex h-8 w-8 items-center justify-center rounded-full text-sm font-bold ring-2 ring-white";
   switch (channel) {
     case "facebook":
       return (
@@ -325,7 +325,7 @@ export default function GoalsDrawer({
             </div>
           </div>
           <fieldset className="mt-3">
-            <legend className="text-xs font-semibold tracking-wider text-zinc-500 uppercase">
+            <legend className="text-sm font-semibold tracking-wider text-zinc-500 uppercase">
               Channels
             </legend>
             <div className="mt-2 flex flex-wrap gap-2">

@@ -90,7 +90,7 @@ export default function OnboardingDrawer({
               className="overflow-hidden rounded-2xl border border-zinc-200"
             >
               <header className="flex items-center justify-between bg-zinc-50 px-5 py-3">
-                <h4 className="text-xs font-semibold tracking-wider text-zinc-700 uppercase">
+                <h4 className="text-sm font-semibold tracking-wider text-zinc-700 uppercase">
                   {group.title}
                 </h4>
                 <span className="text-sm text-zinc-500">
@@ -172,14 +172,14 @@ export default function OnboardingDrawer({
                             <button
                               type="submit"
                               disabled={!note.trim()}
-                              className="cursor-pointer rounded-lg bg-zinc-900 px-3 py-1.5 text-xs font-semibold text-white transition-colors duration-200 hover:bg-zinc-700 disabled:cursor-not-allowed disabled:bg-zinc-300"
+                              className="cursor-pointer rounded-lg bg-zinc-900 px-3 py-1.5 text-sm font-semibold text-white transition-colors duration-200 hover:bg-zinc-700 disabled:cursor-not-allowed disabled:bg-zinc-300"
                             >
                               Save
                             </button>
                             <button
                               type="button"
                               onClick={() => setEditing(null)}
-                              className="cursor-pointer rounded-lg border border-zinc-200 px-3 py-1.5 text-xs font-semibold text-zinc-700 transition-colors duration-200 hover:bg-zinc-50"
+                              className="cursor-pointer rounded-lg border border-zinc-200 px-3 py-1.5 text-sm font-semibold text-zinc-700 transition-colors duration-200 hover:bg-zinc-50"
                             >
                               Cancel
                             </button>

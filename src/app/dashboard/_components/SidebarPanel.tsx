@@ -348,7 +348,7 @@ export default function SidebarPanel({
               aria-expanded={historyOpen}
               aria-controls="sidebar-history-list"
               onClick={() => setHistoryOpen((open) => !open)}
-              className="flex cursor-pointer items-center gap-3 rounded-lg px-1 py-1 text-xs font-semibold tracking-[0.12em] text-zinc-600 uppercase transition-colors duration-200 hover:text-zinc-900"
+              className="flex cursor-pointer items-center gap-3 rounded-lg px-1 py-1 text-sm font-semibold tracking-[0.12em] text-zinc-600 uppercase transition-colors duration-200 hover:text-zinc-900"
             >
               <ChevronDown
                 className={`h-4 w-4 transition-transform duration-200 ${
@@ -434,13 +434,13 @@ export default function SidebarPanel({
                   <p className="truncate text-sm font-semibold text-zinc-900">
                     Ritesh
                   </p>
-                  <p className="truncate text-xs text-zinc-500">{userEmail}</p>
+                  <p className="truncate text-sm text-zinc-500">{userEmail}</p>
                 </div>
               </div>
 
               <div className="my-1 h-px bg-zinc-100" />
 
-              <p className="px-2 pt-1 pb-1 text-[11px] font-semibold tracking-wider text-zinc-400 uppercase">
+              <p className="px-2 pt-1 pb-1 text-sm font-semibold tracking-wider text-zinc-400 uppercase">
                 Workspace
               </p>
               <ul>
@@ -490,7 +490,7 @@ export default function SidebarPanel({
                       aria-hidden="true"
                     />
                     <span className="flex-1">Billing &amp; Credits</span>
-                    <span className="rounded-full bg-zinc-100 px-2 py-0.5 text-[11px] font-medium text-zinc-600">
+                    <span className="rounded-full bg-zinc-100 px-2 py-0.5 text-sm font-medium text-zinc-600">
                       Free
                     </span>
                   </button>

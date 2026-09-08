@@ -328,7 +328,7 @@ function DocumentsSection() {
               <p className="text-sm text-zinc-600">{doc.size}</p>
             </div>
             <span
-              className={`shrink-0 rounded-full px-2 py-0.5 text-xs font-medium ${
+              className={`shrink-0 rounded-full px-2 py-0.5 text-sm font-medium ${
                 doc.indexed
                   ? "bg-emerald-50 text-emerald-700"
                   : "bg-amber-50 text-amber-700"
@@ -515,7 +515,7 @@ function MemorySection({
     >
       {noteEntries.length > 0 && (
         <div className="mb-4">
-          <p className="text-xs font-semibold tracking-wider text-zinc-500 uppercase">
+          <p className="text-sm font-semibold tracking-wider text-zinc-500 uppercase">
             From onboarding
           </p>
           <ul className={`${cardClass} mt-2 divide-y divide-zinc-100 px-4`}>
@@ -533,7 +533,7 @@ function MemorySection({
           <li key={memory.id} className="flex items-start gap-3 py-3">
             <div className="min-w-0 flex-1">
               <p className="text-sm text-zinc-800">{memory.text}</p>
-              <p className="mt-0.5 text-xs text-zinc-500">
+              <p className="mt-0.5 text-sm text-zinc-500">
                 Learned {memory.when}
               </p>
             </div>

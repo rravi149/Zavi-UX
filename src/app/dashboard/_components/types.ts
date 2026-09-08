@@ -1,4 +1,5 @@
 import type { ComponentType } from "react";
+import type { DailyMetric } from "./metrics";
 
 export type PanelId =
   | "sidebar"
@@ -56,7 +57,27 @@ export type ApprovalReview = {
   why: string;
   plan: string[];
   preview?: { label: string; body: string };
-  impact: { label: string; value: string }[];
+  creative?: { image: string; caption: string; kind: "image" | "video" };
+  impact: { label: string; value: string; before?: string }[];
+  impactPeriod?: {
+    before: { range: string; note: string };
+    after: { range: string; note: string };
+  };
+  trend?: { label: string; before: string; after: string; good: "up" | "down" };
+  outcome?: string;
+  evidence?: {
+    confidence: string;
+    rows: {
+      label: string;
+      value: string;
+      note?: string;
+      tone?: "good" | "bad";
+    }[];
+  };
+  scenario?: { positive: string; negative: string };
+  reversible?: { label: string; body: string };
+  daily?: DailyMetric[];
+  resultNoun?: string;
   risk: string;
   undo: string;
   sources: string[];

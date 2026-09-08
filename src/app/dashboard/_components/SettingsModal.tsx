@@ -70,7 +70,7 @@ function Field({
         {label}
       </label>
       <div className="mt-1.5">{children}</div>
-      {hint && <p className="mt-1 text-xs text-zinc-500">{hint}</p>}
+      {hint && <p className="mt-1 text-sm text-zinc-500">{hint}</p>}
     </div>
   );
 }
@@ -724,7 +724,7 @@ function TeamSection({ userEmail }: { userEmail: string }) {
               <p className="flex items-center gap-2 text-sm font-medium text-zinc-900">
                 {member.name}
                 {member.pending && (
-                  <span className="rounded-full bg-amber-50 px-2 py-0.5 text-xs font-medium text-amber-700">
+                  <span className="rounded-full bg-amber-50 px-2 py-0.5 text-sm font-medium text-amber-700">
                     Pending
                   </span>
                 )}

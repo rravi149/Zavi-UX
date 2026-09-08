@@ -163,7 +163,7 @@ export function AreaChart({
   return (
     <div>
       {series.length > 1 && (
-        <ul className="mb-2 flex flex-wrap justify-end gap-x-4 gap-y-1 text-xs text-zinc-600">
+        <ul className="mb-2 flex flex-wrap justify-end gap-x-4 gap-y-1 text-sm text-zinc-600">
           {series.map((s) => (
             <li key={s.id} className="flex items-center gap-1.5">
               <span
@@ -319,7 +319,7 @@ export function AreaChart({
         </svg>
         {hover !== null && labels[hover] && (
           <div
-            className={`pointer-events-none absolute top-0 rounded-lg bg-zinc-900 px-2.5 py-1.5 text-xs whitespace-nowrap text-white shadow-lg ${tooltipShift}`}
+            className={`pointer-events-none absolute top-0 rounded-lg bg-zinc-900 px-2.5 py-1.5 text-sm whitespace-nowrap text-white shadow-lg ${tooltipShift}`}
             style={{ left: `${hoverPercent}%` }}
           >
             <p className="font-semibold">{labels[hover]}</p>

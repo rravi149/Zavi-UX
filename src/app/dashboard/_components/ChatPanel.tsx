@@ -557,7 +557,7 @@ function ComposerMenuContent({
                   aria-hidden="true"
                 />
                 <span className="flex-1 truncate">{connector.name}</span>
-                <span className="text-xs text-zinc-500">
+                <span className="text-sm text-zinc-500">
                   {connector.connected ? "On" : "Connect"}
                 </span>
               </button>
@@ -616,7 +616,7 @@ function ComposerMenuContent({
               <button
                 type="submit"
                 disabled={!skillName.trim()}
-                className="mt-2 w-full cursor-pointer rounded-lg bg-zinc-900 px-3 py-1.5 text-xs font-semibold text-white transition-colors duration-200 hover:bg-zinc-700 disabled:cursor-not-allowed disabled:bg-zinc-300"
+                className="mt-2 w-full cursor-pointer rounded-lg bg-zinc-900 px-3 py-1.5 text-sm font-semibold text-white transition-colors duration-200 hover:bg-zinc-700 disabled:cursor-not-allowed disabled:bg-zinc-300"
               >
                 Add skill
               </button>
@@ -625,7 +625,7 @@ function ComposerMenuContent({
 
           {view === "manage" && (
             <div className="p-1">
-              <p className="px-2 text-xs font-semibold tracking-wider text-zinc-500 uppercase">
+              <p className="px-2 text-sm font-semibold tracking-wider text-zinc-500 uppercase">
                 Skills
               </p>
               <ul className="mt-1">
@@ -687,7 +687,7 @@ function AttachmentChips({
       {items.map((name) => (
         <span
           key={name}
-          className="flex items-center gap-1 rounded-md border border-zinc-200 bg-white px-2 py-0.5 text-xs text-zinc-600"
+          className="flex items-center gap-1 rounded-md border border-zinc-200 bg-white px-2 py-0.5 text-sm text-zinc-600"
         >
           <Paperclip className="h-3 w-3" aria-hidden="true" />
           {name}
@@ -857,7 +857,7 @@ function TaskUpdates({
         />
         Task updates
         {pending > 0 && (
-          <span className="ml-auto rounded-full bg-emerald-50 px-2 py-0.5 text-xs font-medium text-emerald-700">
+          <span className="ml-auto rounded-full bg-emerald-50 px-2 py-0.5 text-sm font-medium text-emerald-700">
             {pending} ready for review
           </span>
         )}
@@ -879,7 +879,7 @@ function TaskUpdates({
                 aria-hidden="true"
               />
               <div className="min-w-[140px] flex-1">
-                <p className="text-xs font-medium whitespace-nowrap text-zinc-500">
+                <p className="text-sm font-medium whitespace-nowrap text-zinc-500">
                   {task.status === "review" ? "Ready for review" : "Applied"}
                 </p>
                 <p className="text-sm leading-snug text-zinc-900">
@@ -891,13 +891,13 @@ function TaskUpdates({
                   <button
                     type="button"
                     onClick={() => onApply(task.id)}
-                    className="flex shrink-0 cursor-pointer items-center gap-1.5 rounded-lg border border-zinc-200 bg-white px-3 py-1.5 text-xs font-medium text-zinc-900 transition-colors duration-200 hover:bg-zinc-50"
+                    className="flex shrink-0 cursor-pointer items-center gap-1.5 rounded-lg border border-zinc-200 bg-white px-3 py-1.5 text-sm font-medium text-zinc-900 transition-colors duration-200 hover:bg-zinc-50"
                   >
                     Apply changes
                     <Check className="h-3.5 w-3.5" aria-hidden="true" />
                   </button>
                 ) : (
-                  <span className="flex shrink-0 items-center gap-1.5 text-xs font-medium text-zinc-500">
+                  <span className="flex shrink-0 items-center gap-1.5 text-sm font-medium text-zinc-500">
                     <Check className="h-3.5 w-3.5" aria-hidden="true" />
                     Applied
                   </span>
@@ -1416,7 +1416,7 @@ export default function ChatPanel({
           {attachments.map((name) => (
             <li
               key={name}
-              className="flex items-center gap-1 rounded-md border border-zinc-200 bg-zinc-50 px-2 py-0.5 text-xs text-zinc-700"
+              className="flex items-center gap-1 rounded-md border border-zinc-200 bg-zinc-50 px-2 py-0.5 text-sm text-zinc-700"
             >
               <Paperclip className="h-3 w-3" aria-hidden="true" />
               <span className="max-w-[10rem] truncate">{name}</span>
@@ -1522,7 +1522,7 @@ export default function ChatPanel({
                   id="model-select"
                   value={model}
                   onChange={(event) => setModel(event.target.value)}
-                  className="h-8 cursor-pointer appearance-none rounded-lg bg-transparent pr-6 pl-8 text-xs font-medium text-zinc-700 transition-colors duration-200 hover:bg-zinc-100 focus:ring-2 focus:ring-zinc-300 focus:outline-none"
+                  className="h-8 cursor-pointer appearance-none rounded-lg bg-transparent pr-6 pl-8 text-sm font-medium text-zinc-700 transition-colors duration-200 hover:bg-zinc-100 focus:ring-2 focus:ring-zinc-300 focus:outline-none"
                 >
                   {models.map((option) => (
                     <option key={option}>{option}</option>
@@ -1544,7 +1544,7 @@ export default function ChatPanel({
               aria-checked={planMode}
               aria-label={`Agent mode: ${planMode ? "Plan" : "Build"}. Toggle`}
               onClick={() => setPlanMode((value) => !value)}
-              className={`h-8 cursor-pointer rounded-lg px-2.5 text-xs font-medium transition-colors duration-200 ${
+              className={`h-8 cursor-pointer rounded-lg px-2.5 text-sm font-medium transition-colors duration-200 ${
                 planMode
                   ? "bg-zinc-900 text-white hover:bg-zinc-700"
                   : "text-zinc-800 hover:bg-zinc-100"
@@ -1640,7 +1640,7 @@ export default function ChatPanel({
                 aria-selected={active}
                 aria-controls="chat-thread"
                 onClick={() => onModeChange(item.id)}
-                className={`cursor-pointer rounded-md px-2.5 py-1 text-xs font-medium transition-colors duration-200 ${
+                className={`cursor-pointer rounded-md px-2.5 py-1 text-sm font-medium transition-colors duration-200 ${
                   active
                     ? "bg-white text-zinc-900 shadow-sm ring-1 ring-zinc-200"
                     : "text-zinc-600 hover:text-zinc-900"
@@ -1670,7 +1670,7 @@ export default function ChatPanel({
           >
             {(close) => (
               <div>
-                <p className="px-2 py-1 text-xs font-semibold tracking-wider text-zinc-500 uppercase">
+                <p className="px-2 py-1 text-sm font-semibold tracking-wider text-zinc-500 uppercase">
                   Recent threads
                 </p>
                 <ul>
@@ -1694,7 +1694,7 @@ export default function ChatPanel({
                           <span className="min-w-0 flex-1 truncate">
                             {thread.title}
                           </span>
-                          <span className="text-xs text-zinc-500">
+                          <span className="text-sm text-zinc-500">
                             {thread.count}
                           </span>
                         </button>
@@ -1842,7 +1842,7 @@ export default function ChatPanel({
                         >
                           <Copy className="h-4 w-4" />
                         </button>
-                        <p className="text-xs text-zinc-500">{message.meta}</p>
+                        <p className="text-sm text-zinc-500">{message.meta}</p>
                       </div>
                     </div>
                   );
@@ -1881,14 +1881,14 @@ export default function ChatPanel({
             )}
 
             {notice && (
-              <p role="status" className="mx-4 mt-2 text-xs text-zinc-600">
+              <p role="status" className="mx-4 mt-2 text-sm text-zinc-600">
                 {notice}
               </p>
             )}
 
             {mode === "build" && (
               <div className="mx-4 mt-2">
-                <div className="mb-2 flex items-center gap-1.5 text-xs font-medium text-zinc-600">
+                <div className="mb-2 flex items-center gap-1.5 text-sm font-medium text-zinc-600">
                   <Lightbulb className="h-3.5 w-3.5" aria-hidden="true" />
                   Suggestions
                 </div>
@@ -1905,7 +1905,7 @@ export default function ChatPanel({
                           setDraft(suggestion);
                           textareaRef.current?.focus();
                         }}
-                        className="shrink-0 cursor-pointer rounded-lg border border-zinc-200 bg-white px-2.5 py-1 text-xs font-medium text-zinc-700 transition-colors duration-200 hover:bg-zinc-50"
+                        className="shrink-0 cursor-pointer rounded-lg border border-zinc-200 bg-white px-2.5 py-1 text-sm font-medium text-zinc-700 transition-colors duration-200 hover:bg-zinc-50"
                       >
                         {suggestion}
                       </button>

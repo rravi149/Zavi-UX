@@ -185,7 +185,7 @@ export default function BuildPreview({
           type="button"
           aria-pressed={editing}
           onClick={() => onEditingChange(!editing)}
-          className={`flex h-8 cursor-pointer items-center gap-1.5 rounded-lg border px-2.5 text-xs font-medium transition-colors duration-200 ${
+          className={`flex h-8 cursor-pointer items-center gap-1.5 rounded-lg border px-2.5 text-sm font-medium transition-colors duration-200 ${
             editing
               ? "border-zinc-900 bg-zinc-900 text-white"
               : "border-zinc-200 bg-white text-zinc-700 hover:bg-zinc-50"
@@ -214,7 +214,7 @@ export default function BuildPreview({
               id="page-select"
               value={pageId}
               onChange={(event) => setPageId(event.target.value)}
-              className="h-8 cursor-pointer appearance-none rounded-lg border border-zinc-200 bg-white pr-7 pl-3 text-xs font-medium text-zinc-800 transition-colors duration-200 hover:bg-zinc-50 focus:ring-2 focus:ring-zinc-300 focus:outline-none"
+              className="h-8 cursor-pointer appearance-none rounded-lg border border-zinc-200 bg-white pr-7 pl-3 text-sm font-medium text-zinc-800 transition-colors duration-200 hover:bg-zinc-50 focus:ring-2 focus:ring-zinc-300 focus:outline-none"
             >
               {pages.map((item) => (
                 <option key={item.id} value={item.id}>
@@ -268,7 +268,7 @@ export default function BuildPreview({
           >
             {() => (
               <div className="p-1">
-                <p className="text-xs font-semibold tracking-wider text-zinc-500 uppercase">
+                <p className="text-sm font-semibold tracking-wider text-zinc-500 uppercase">
                   Comments
                 </p>
                 {comments.length === 0 ? (
@@ -282,7 +282,7 @@ export default function BuildPreview({
                         key={comment.id}
                         className="rounded-lg bg-zinc-50 px-3 py-2 text-sm text-zinc-800"
                       >
-                        <span className="block text-xs font-medium text-zinc-500">
+                        <span className="block text-sm font-medium text-zinc-500">
                           You · just now
                         </span>
                         {comment.text}
@@ -305,7 +305,7 @@ export default function BuildPreview({
                   <button
                     type="submit"
                     disabled={!commentDraft.trim()}
-                    className="mt-2 w-full cursor-pointer rounded-lg bg-zinc-900 px-3 py-1.5 text-xs font-semibold text-white transition-colors duration-200 hover:bg-zinc-700 disabled:cursor-not-allowed disabled:bg-zinc-300"
+                    className="mt-2 w-full cursor-pointer rounded-lg bg-zinc-900 px-3 py-1.5 text-sm font-semibold text-white transition-colors duration-200 hover:bg-zinc-700 disabled:cursor-not-allowed disabled:bg-zinc-300"
                   >
                     Post comment
                   </button>
@@ -320,7 +320,7 @@ export default function BuildPreview({
                 <span
                   key={`${initials}-${index}`}
                   title={initials}
-                  className={`flex h-7 w-7 items-center justify-center rounded-full border-2 border-white text-[10px] font-semibold ${
+                  className={`flex h-7 w-7 items-center justify-center rounded-full border-2 border-white text-sm font-semibold ${
                     index % 2 === 0
                       ? "bg-zinc-800 text-white"
                       : "bg-zinc-300 text-zinc-800"
@@ -353,7 +353,7 @@ export default function BuildPreview({
                   onSubmit={(event) => sendInvite(event, close)}
                   className="p-1"
                 >
-                  <p className="text-xs font-semibold tracking-wider text-zinc-500 uppercase">
+                  <p className="text-sm font-semibold tracking-wider text-zinc-500 uppercase">
                     Invite a collaborator
                   </p>
                   <label htmlFor="invite-email" className="sr-only">
@@ -369,7 +369,7 @@ export default function BuildPreview({
                   />
                   <button
                     type="submit"
-                    className="mt-2 w-full cursor-pointer rounded-lg bg-zinc-900 px-3 py-1.5 text-xs font-semibold text-white transition-colors duration-200 hover:bg-zinc-700"
+                    className="mt-2 w-full cursor-pointer rounded-lg bg-zinc-900 px-3 py-1.5 text-sm font-semibold text-white transition-colors duration-200 hover:bg-zinc-700"
                   >
                     Send invite
                   </button>
@@ -450,7 +450,7 @@ export default function BuildPreview({
                 aria-haspopup="dialog"
                 aria-controls={id}
                 onClick={toggle}
-                className={`hidden h-8 cursor-pointer items-center gap-1.5 rounded-lg px-2.5 text-xs font-semibold transition-colors duration-200 2xl:flex ${
+                className={`hidden h-8 cursor-pointer items-center gap-1.5 rounded-lg px-2.5 text-sm font-semibold transition-colors duration-200 2xl:flex ${
                   plan === "pro"
                     ? "text-emerald-700 hover:bg-emerald-50"
                     : "text-orange-600 hover:bg-orange-50"
@@ -463,7 +463,7 @@ export default function BuildPreview({
           >
             {(close) => (
               <div className="p-1">
-                <p className="text-xs font-semibold tracking-wider text-zinc-500 uppercase">
+                <p className="text-sm font-semibold tracking-wider text-zinc-500 uppercase">
                   {plan === "pro" ? "Your plan" : "Upgrade to Pro"}
                 </p>
                 <p className="mt-1 text-sm font-semibold text-zinc-900">
@@ -487,7 +487,7 @@ export default function BuildPreview({
                       showNotice("Welcome to Pro.");
                       close();
                     }}
-                    className="mt-3 w-full cursor-pointer rounded-lg bg-zinc-900 px-3 py-1.5 text-xs font-semibold text-white transition-colors duration-200 hover:bg-zinc-700"
+                    className="mt-3 w-full cursor-pointer rounded-lg bg-zinc-900 px-3 py-1.5 text-sm font-semibold text-white transition-colors duration-200 hover:bg-zinc-700"
                   >
                     Upgrade to Pro
                   </button>
@@ -499,7 +499,7 @@ export default function BuildPreview({
           <button
             type="button"
             onClick={publish}
-            className={`flex h-8 cursor-pointer items-center gap-1.5 rounded-lg px-3 text-xs font-semibold text-white transition-colors duration-200 ${
+            className={`flex h-8 cursor-pointer items-center gap-1.5 rounded-lg px-3 text-sm font-semibold text-white transition-colors duration-200 ${
               published ? "bg-emerald-600" : "bg-zinc-900 hover:bg-zinc-700"
             }`}
           >
@@ -518,7 +518,7 @@ export default function BuildPreview({
       {notice && (
         <p
           role="status"
-          className="shrink-0 border-b border-zinc-200 bg-zinc-50 px-3 py-1.5 text-xs text-zinc-600"
+          className="shrink-0 border-b border-zinc-200 bg-zinc-50 px-3 py-1.5 text-sm text-zinc-600"
         >
           {notice}
         </p>
@@ -530,7 +530,7 @@ export default function BuildPreview({
             className="h-4 w-4 shrink-0 text-zinc-500"
             aria-hidden="true"
           />
-          <span className="min-w-0 flex-1 truncate text-xs text-zinc-700">
+          <span className="min-w-0 flex-1 truncate text-sm text-zinc-700">
             {domain ? `https://${domain}${page.path}` : previewUrl}
           </span>
           <Dropdown
@@ -544,7 +544,7 @@ export default function BuildPreview({
                 aria-haspopup="dialog"
                 aria-controls={id}
                 onClick={toggle}
-                className={`flex h-7 shrink-0 cursor-pointer items-center gap-1.5 rounded-md px-2.5 text-xs font-semibold transition-colors duration-200 ${
+                className={`flex h-7 shrink-0 cursor-pointer items-center gap-1.5 rounded-md px-2.5 text-sm font-semibold transition-colors duration-200 ${
                   domain
                     ? "border border-amber-300 bg-amber-50 text-amber-800 hover:bg-amber-100"
                     : "bg-orange-500 text-white hover:bg-orange-600"
@@ -557,7 +557,7 @@ export default function BuildPreview({
           >
             {(close) => (
               <div className="p-1">
-                <p className="text-xs font-semibold tracking-wider text-zinc-500 uppercase">
+                <p className="text-sm font-semibold tracking-wider text-zinc-500 uppercase">
                   Custom domain
                 </p>
                 {domain ? (
@@ -565,7 +565,7 @@ export default function BuildPreview({
                     <p className="mt-2 text-sm font-semibold text-zinc-900">
                       {domain}
                     </p>
-                    <p className="mt-1 text-xs leading-relaxed text-zinc-600">
+                    <p className="mt-1 text-sm leading-relaxed text-zinc-600">
                       Waiting for DNS. Add a CNAME record pointing to
                       sites.zavi.app, then publish again.
                     </p>
@@ -576,7 +576,7 @@ export default function BuildPreview({
                         showNotice("Domain removed.");
                         close();
                       }}
-                      className="mt-3 w-full cursor-pointer rounded-lg border border-zinc-200 px-3 py-1.5 text-xs font-semibold text-zinc-700 transition-colors duration-200 hover:bg-zinc-50"
+                      className="mt-3 w-full cursor-pointer rounded-lg border border-zinc-200 px-3 py-1.5 text-sm font-semibold text-zinc-700 transition-colors duration-200 hover:bg-zinc-50"
                     >
                       Remove domain
                     </button>
@@ -596,7 +596,7 @@ export default function BuildPreview({
                     />
                     <button
                       type="submit"
-                      className="mt-2 w-full cursor-pointer rounded-lg bg-zinc-900 px-3 py-1.5 text-xs font-semibold text-white transition-colors duration-200 hover:bg-zinc-700"
+                      className="mt-2 w-full cursor-pointer rounded-lg bg-zinc-900 px-3 py-1.5 text-sm font-semibold text-white transition-colors duration-200 hover:bg-zinc-700"
                     >
                       Connect
                     </button>
@@ -619,7 +619,7 @@ export default function BuildPreview({
         {editing && (
           <div
             role="status"
-            className="flex shrink-0 items-center gap-3 border-b border-blue-100 bg-blue-50 px-4 py-2 text-xs text-blue-900"
+            className="flex shrink-0 items-center gap-3 border-b border-blue-100 bg-blue-50 px-4 py-2 text-sm text-blue-900"
           >
             <span className="flex-1">
               Click any element in the preview to reference it in your prompt.

@@ -163,7 +163,7 @@ export function BarChart({
 
       {hover !== null && labels[hover] && (
         <div
-          className="pointer-events-none absolute top-0 -translate-x-1/2 rounded-lg bg-zinc-900 px-2.5 py-1.5 text-xs whitespace-nowrap text-white shadow-lg"
+          className="pointer-events-none absolute top-0 -translate-x-1/2 rounded-lg bg-zinc-900 px-2.5 py-1.5 text-sm whitespace-nowrap text-white shadow-lg"
           style={{ left: `${(xAt(hover) / w) * 100}%` }}
         >
           <p className="font-semibold">{labels[hover]}</p>

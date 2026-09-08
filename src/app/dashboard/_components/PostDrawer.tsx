@@ -134,7 +134,7 @@ export default function PostDrawer({
               onClick={onPost}
               className="flex h-9 cursor-pointer items-center gap-1.5 rounded-lg bg-zinc-900 px-3 text-sm font-medium text-white transition-colors duration-200 hover:bg-zinc-700"
             >
-              <span className="text-[13px] font-bold">X</span>
+              <span className="text-sm font-bold">X</span>
               Post
             </button>
             <div className="flex items-center gap-0.5 rounded-lg border border-zinc-200 p-0.5">
@@ -265,7 +265,7 @@ export default function PostDrawer({
                 className="h-4 w-4 shrink-0 text-amber-500"
                 aria-hidden="true"
               />
-              <p className="text-xs font-semibold tracking-wider text-zinc-500 uppercase">
+              <p className="text-sm font-semibold tracking-wider text-zinc-500 uppercase">
                 Why this works
               </p>
             </div>

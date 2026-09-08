@@ -171,7 +171,7 @@ const cardClass = "rounded-2xl border border-zinc-200 bg-white";
 const primaryButtonClass =
   "flex h-9 cursor-pointer items-center gap-2 rounded-lg bg-zinc-900 px-3 text-sm font-semibold text-white transition-colors duration-200 hover:bg-zinc-700 disabled:cursor-not-allowed disabled:bg-zinc-400";
 const secondaryButtonClass =
-  "h-8 shrink-0 cursor-pointer rounded-lg border border-zinc-200 bg-white px-2.5 text-xs font-medium text-zinc-800 transition-colors duration-200 hover:bg-zinc-100 disabled:cursor-not-allowed disabled:text-zinc-400";
+  "h-8 shrink-0 cursor-pointer rounded-lg border border-zinc-200 bg-white px-2.5 text-sm font-medium text-zinc-800 transition-colors duration-200 hover:bg-zinc-100 disabled:cursor-not-allowed disabled:text-zinc-400";
 
 function HelpTip({ label, text }: { label: string; text: string }) {
   return (
@@ -278,7 +278,7 @@ export default function SeoAnalytics({ range }: { range: string }) {
             <p className="flex flex-wrap items-center gap-2 text-[15px] font-semibold text-zinc-900">
               Google Search Console
               {connected && (
-                <span className="flex items-center gap-1 rounded-full bg-emerald-50 px-2 py-0.5 text-xs font-medium text-emerald-700">
+                <span className="flex items-center gap-1 rounded-full bg-emerald-50 px-2 py-0.5 text-sm font-medium text-emerald-700">
                   <Check className="h-3 w-3" aria-hidden="true" />
                   Connected
                 </span>
@@ -383,7 +383,7 @@ export default function SeoAnalytics({ range }: { range: string }) {
         <div className="flex flex-wrap items-center gap-3 border-b border-zinc-200 px-4 py-3">
           <h3 className="text-xl font-semibold text-zinc-900">SEO Rating</h3>
           <span
-            className={`rounded-full px-2.5 py-0.5 text-xs font-semibold ${ratingClass}`}
+            className={`rounded-full px-2.5 py-0.5 text-sm font-semibold ${ratingClass}`}
           >
             {rating}
           </span>
@@ -415,7 +415,7 @@ export default function SeoAnalytics({ range }: { range: string }) {
                       setResolved(seedIssues.map((issue) => issue.id))
                     }
                     disabled={open.length === 0}
-                    className="h-8 cursor-pointer rounded-lg bg-zinc-900 px-2.5 text-xs font-semibold text-white transition-colors duration-200 hover:bg-zinc-700 disabled:cursor-not-allowed disabled:bg-zinc-300"
+                    className="h-8 cursor-pointer rounded-lg bg-zinc-900 px-2.5 text-sm font-semibold text-white transition-colors duration-200 hover:bg-zinc-700 disabled:cursor-not-allowed disabled:bg-zinc-300"
                   >
                     Fix all with Agent
                   </button>
@@ -488,7 +488,7 @@ export default function SeoAnalytics({ range }: { range: string }) {
                           </td>
                           <td className="px-3 py-3">
                             <span
-                              className={`inline-block rounded-full px-2 py-0.5 text-xs font-medium ${severityStyles[issue.severity]}`}
+                              className={`inline-block rounded-full px-2 py-0.5 text-sm font-medium ${severityStyles[issue.severity]}`}
                             >
                               {issue.severity}
                             </span>
@@ -531,7 +531,7 @@ export default function SeoAnalytics({ range }: { range: string }) {
         <div className="min-w-[12rem] flex-1">
           <p className="flex flex-wrap items-center gap-2 text-[15px] font-semibold text-zinc-900">
             Advanced analytics
-            <span className="rounded-full bg-zinc-100 px-2 py-0.5 text-xs font-medium text-zinc-700">
+            <span className="rounded-full bg-zinc-100 px-2 py-0.5 text-sm font-medium text-zinc-700">
               New
             </span>
           </p>
@@ -625,7 +625,7 @@ export default function SeoAnalytics({ range }: { range: string }) {
             <TrendingUp className="h-4 w-4" aria-hidden="true" />
             +632 vs previous 7 days (+52%)
           </p>
-          <p className="mt-3 text-xs text-zinc-500">
+          <p className="mt-3 text-sm text-zinc-500">
             {visitors.toLocaleString("en-US")} unique IP addresses
           </p>
           <div className="mt-4">

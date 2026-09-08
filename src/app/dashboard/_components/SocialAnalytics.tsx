@@ -190,7 +190,7 @@ function Delta({
   return (
     <span
       className={`flex items-center gap-0.5 font-medium ${
-        compact ? "text-xs" : "gap-1 text-sm"
+        compact ? "text-sm" : "gap-1 text-sm"
       } ${up ? "text-emerald-700" : "text-red-600"}`}
     >
       <Icon className={compact ? "h-3 w-3" : "h-4 w-4"} aria-hidden="true" />
@@ -203,7 +203,7 @@ function Delta({
 function ChannelBadge({ channel }: { channel: Channel }) {
   return (
     <span
-      className={`flex h-8 w-8 shrink-0 items-center justify-center rounded-full text-xs font-bold ${channel.chip}`}
+      className={`flex h-8 w-8 shrink-0 items-center justify-center rounded-full text-sm font-bold ${channel.chip}`}
       aria-hidden="true"
     >
       {channel.glyph}
@@ -334,7 +334,7 @@ export default function SocialAnalytics({ range }: { range: string }) {
             key={kpi.key}
             className={`${cardClass} w-36 shrink-0 grow basis-36 px-3 py-3`}
           >
-            <dt className="truncate text-xs text-zinc-600">
+            <dt className="truncate text-sm text-zinc-600">
               {metricLabels[kpi.key]}
             </dt>
             <dd className="mt-1 truncate text-xl font-semibold text-zinc-900 tabular-nums">

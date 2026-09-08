@@ -178,7 +178,7 @@ function Section({
         </button>
         <div className="flex shrink-0 items-center gap-2">
           {typeof meta === "string" ? (
-            <span className="text-xs text-zinc-400">{meta}</span>
+            <span className="text-sm text-zinc-400">{meta}</span>
           ) : (
             meta
           )}
@@ -472,14 +472,14 @@ export default function GrowthPlanPanel({
           title="What we track"
           meta={
             <>
-              <span className="text-xs text-zinc-400">Cap is 3</span>
+              <span className="text-sm text-zinc-400">Cap is 3</span>
               <button
                 type="button"
                 onClick={(event) => {
                   event.stopPropagation();
                   onOpenGoals();
                 }}
-                className="flex cursor-pointer items-center gap-1 text-xs font-semibold text-zinc-900 hover:text-zinc-600"
+                className="flex cursor-pointer items-center gap-1 text-sm font-semibold text-zinc-900 hover:text-zinc-600"
               >
                 <Plus className="h-3.5 w-3.5" aria-hidden="true" />
                 Add a goal
@@ -503,7 +503,7 @@ export default function GrowthPlanPanel({
                     <button
                       type="button"
                       onClick={onOpenGoals}
-                      className="flex shrink-0 cursor-pointer items-center gap-1 text-xs font-medium text-zinc-500 hover:text-zinc-900"
+                      className="flex shrink-0 cursor-pointer items-center gap-1 text-sm font-medium text-zinc-500 hover:text-zinc-900"
                     >
                       <Pencil className="h-3.5 w-3.5" aria-hidden="true" />
                       Edit
@@ -514,7 +514,7 @@ export default function GrowthPlanPanel({
                   </p>
                   <div className="mt-2 flex flex-wrap gap-2">
                     <span
-                      className={`inline-flex rounded-full px-2.5 py-0.5 text-xs font-medium ${
+                      className={`inline-flex rounded-full px-2.5 py-0.5 text-sm font-medium ${
                         goal.status === "met"
                           ? "bg-emerald-50 text-emerald-700"
                           : "bg-zinc-100 text-zinc-600"
@@ -522,7 +522,7 @@ export default function GrowthPlanPanel({
                     >
                       {goal.status}
                     </span>
-                    <span className="inline-flex rounded-full bg-zinc-100 px-2.5 py-0.5 text-xs font-medium text-zinc-600">
+                    <span className="inline-flex rounded-full bg-zinc-100 px-2.5 py-0.5 text-sm font-medium text-zinc-600">
                       you added this
                     </span>
                   </div>
@@ -531,7 +531,7 @@ export default function GrowthPlanPanel({
             ))}
           </ul>
 
-          <p className="mt-5 text-xs font-semibold tracking-wider text-zinc-400 uppercase">
+          <p className="mt-5 text-sm font-semibold tracking-wider text-zinc-400 uppercase">
             The numbers behind them
           </p>
           <div className="mt-3 divide-y divide-zinc-100 rounded-2xl border border-zinc-200">
