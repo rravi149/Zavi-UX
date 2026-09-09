@@ -335,6 +335,33 @@ export default function ApprovalDrawer({
     >
       <SectionTitle icon={ShieldCheck}>Why this needs your approval</SectionTitle>
       <p className="mt-2 text-sm leading-relaxed font-medium text-zinc-700">{request.why}</p>
+
+      {/*
+        The risk and undo text was authored for every item but rendered nowhere in
+        this drawer, so the founder could never reach it at any depth. Restored.
+      */}
+      {(request.risk || request.undo) && (
+        <dl className="mt-3 grid gap-x-4 gap-y-1.5 border-t border-zinc-200 pt-3 text-sm leading-relaxed sm:grid-cols-[auto_1fr]">
+          {request.risk && (
+            <>
+              <dt className="font-semibold whitespace-nowrap text-zinc-700">Risk</dt>
+              <dd className="text-zinc-600">{request.risk}</dd>
+            </>
+          )}
+          {request.undo && (
+            <>
+              <dt className="font-semibold whitespace-nowrap text-zinc-700">Undo</dt>
+              <dd className="text-zinc-600">{request.undo}</dd>
+            </>
+          )}
+          {request.scenario?.negative && (
+            <>
+              <dt className="font-semibold whitespace-nowrap text-zinc-700">If it goes wrong</dt>
+              <dd className="text-zinc-600">{request.scenario.negative}</dd>
+            </>
+          )}
+        </dl>
+      )}
     </section>
   );
 

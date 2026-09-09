@@ -1,6 +1,12 @@
 import type { ApprovalReview } from "./types";
 
-export type CopyOptionId = "direct" | "conversational";
+export type CopyOptionId =
+  | "direct"
+  | "conversational"
+  | "goal"
+  | "constraint"
+  | "merged"
+  | "option1plus";
 
 export type CopyOption = {
   id: CopyOptionId;
@@ -8,8 +14,12 @@ export type CopyOption = {
   /** Short form for tight columns like the channel list. */
   short: string;
   hint: string;
-  /** "grid" lays all actions out side by side. "focus" walks through them one at a time. */
-  layout: "grid" | "focus";
+  /**
+   * "grid" lays all actions out side by side. "focus" walks them one at a time.
+   * "flow" hands the whole surface to a self-contained end-to-end flow component
+   * (alert through result) instead of rendering the shared action cards.
+   */
+  layout: "grid" | "focus" | "flow";
 };
 
 /**
@@ -32,7 +42,46 @@ export const copyOptions: CopyOption[] = [
     hint: "One decision at a time, with just the number that matters.",
     layout: "focus",
   },
+  {
+    id: "goal",
+    label: "Option 3 \u00b7 Against your goal",
+    short: "Against your goal",
+    hint: "Starts from the number you set, and is honest about how much of the gap this closes.",
+    layout: "flow",
+  },
+  {
+    id: "constraint",
+    label: "Option 4 \u00b7 One constraint",
+    short: "One constraint",
+    hint: "Names the one thing holding the account back, then moves the money as a single plan.",
+    layout: "flow",
+  },
+  {
+    id: "merged",
+    label: "Option 5 \u00b7 Merged",
+    short: "Merged",
+    hint: "The best of options 1 to 4, with every defect the five-rater review found fixed.",
+    layout: "flow",
+  },
+  {
+    id: "option1plus",
+    label: "Option 6 \u00b7 Option 1 improved",
+    short: "Option 1 improved",
+    hint: "Option 1's grid of always-open evidence tables, with the seven review fixes applied.",
+    layout: "flow",
+  },
 ];
+
+/**
+ * Options 3 and 4 own their own copy inside their flow components, so the
+ * per-item card copy below only covers the two card-based options. Anything
+ * indexing `metaItemCopy` or `channelHeadline` must resolve through this.
+ */
+export type CardCopyOptionId = "direct" | "conversational";
+
+export function cardCopyOption(option: CopyOptionId): CardCopyOptionId {
+  return option === "conversational" ? "conversational" : "direct";
+}
 
 type EvidenceCopy = { label?: string; value?: string; note?: string };
 
@@ -56,14 +105,14 @@ export type ItemCopy = {
   sources?: string[];
 };
 
-export const channelHeadline: Record<CopyOptionId, string> = {
+export const channelHeadline: Record<CardCopyOptionId, string> = {
   direct:
-    "5 changes ready. Together they take about $85 a day off an ad that stopped selling and should bring in 30 to 40 more sales a week.",
+    "5 changes ready. Together they free about $85 a day from an ad that stopped selling. One of the five, the budget raise, is the only one forecasting more sales, roughly 30 to 40 a week.",
   conversational:
-    "Zavi found 5 things worth changing this week. Approve them all and you free up about $85 a day and pick up roughly 30 to 40 extra sales a week.",
+    "Zavi found 5 things worth changing this week. Together they free about $85 a day. The extra sales, roughly 30 to 40 a week, come from one of the five on its own, not from all of them.",
 };
 
-export const metaItemCopy: Record<CopyOptionId, Record<number, ItemCopy>> = {
+export const metaItemCopy: Record<CardCopyOptionId, Record<number, ItemCopy>> = {
   direct: {
     1: {
       title: "Turn off an ad that stopped paying for itself",
@@ -159,7 +208,7 @@ export const metaItemCopy: Record<CopyOptionId, Record<number, ItemCopy>> = {
         "Watch the clicks for 5 days",
       ],
       outcome: "Up to twice as many clicks",
-      risk: "Low. Same people, same budget, same places. Only the picture changes.",
+      risk: "Low, with one catch. Same people, same budget, same places, only the picture changes. New pictures do restart Meta's learning though, so the ad can run unevenly for 5 to 7 days first.",
       undo: "Switch the new pictures off and bring the old one back from this panel.",
       trendLabel: "Click rate",
       creativeCaption: "\"Still thinking about it?\" video ad",
@@ -378,7 +427,7 @@ export const metaItemCopy: Record<CopyOptionId, Record<number, ItemCopy>> = {
         "See how the clicks look after 5 days",
       ],
       outcome: "Clicks could roughly double",
-      risk: "Very little. Nothing about who sees it or what you spend changes. Only the picture.",
+      risk: "Small, with one catch. Nothing about who sees it or what you spend changes, only the picture. New pictures do restart Meta's learning though, so it can run unevenly for 5 to 7 days first.",
       undo: "Switch the new pictures off and put the old one back, in one click.",
       trendLabel: "How many people click",
       creativeCaption: "\"Still thinking about it?\" video ad",

@@ -64,7 +64,7 @@ const seedChat: ChatEntry[] = [
   {
     id: 2,
     role: "assistant",
-    text: 'Here is the draft. Correct me where I am wrong.\n\nThe constraint is Meta Ads is the only channel with clean, readable data — every other channel is either not connected or connected with nothing readable yet. Betting on channels I can\'t measure means guessing.\n\nNorth star: weekly active learners, driven by Meta Ads spend efficiency (currently 3.38x ROAS on $13,988). That is the one number that proves demand is real.\n\nTwo channel bets, in order of leverage:\nMeta Ads. Already spending and already measurable — raise budget on what is working before adding a new unmeasured channel.\nSEO. Already delivering ranked data with no marginal spend; compounding for free while Meta scales.',
+    text: 'Here is the draft. Correct me where I am wrong.\n\nThe constraint is Meta Ads is the only channel whose numbers I can read. Everything else is either not connected or connected with nothing readable yet, so any money spent there is spent blind.\n\nNorth star: Ad CPA, currently $4.07, on $1,077.23 of spend over 265 conversions, read from Meta Ads. That is Meta only, not your blended CPA.\n\nTwo channel bets, in order of leverage:\nMeta Ads. Raise budget 40% on the two ad sets under $5 CPA. About 90 more signups a week at roughly the same CPA. Reconsider if CPA sits above $6 for three days straight.\nSEO. Publish 8 city landing pages before spending on a new channel. First ranked impressions in 3-4 weeks, no marginal spend. Reconsider if no page reaches page two within 6 weeks.\n\nThe plan is a draft until you accept it. It does not steer any channel until then.',
   },
 ];
 

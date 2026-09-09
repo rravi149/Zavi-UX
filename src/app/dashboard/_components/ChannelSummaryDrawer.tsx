@@ -12,6 +12,10 @@ import { useState, type ComponentType } from "react";
 import type { ApprovalReview } from "./types";
 import { confidenceTone } from "./metrics";
 import { copyOptions, type CopyOptionId } from "./plainCopy";
+import Option3Flow from "../../meta-option-3/Flow";
+import Option4Flow from "../../meta-option-4/Flow";
+import Option5Flow from "../../meta-option-5/Flow";
+import Option6Flow from "../../meta-option-6/Flow";
 
 type SummaryItem = {
   id: number;
@@ -186,7 +190,7 @@ function ActionCard({
         </div>
       )}
 
-      {!item.review.reversible && (
+      {(item.review.risk || item.review.reversible) && (
         <div className="mt-3 flex items-start gap-2 text-sm text-zinc-600">
           <span
             className={`shrink-0 rounded-full px-2 py-0.5 font-semibold ${riskTone[riskLevel] ?? "bg-zinc-100 text-zinc-700"}`}
@@ -473,13 +477,25 @@ export default function ChannelSummaryDrawer({
           </div>
         )}
 
-        {summary && (
+        {summary && layout !== "flow" && (
           <p className="rounded-2xl border border-zinc-200 bg-zinc-50 px-4 py-3 text-sm leading-snug font-medium text-zinc-800">
             {summary.headline}
           </p>
         )}
 
-        {items.length === 0 ? (
+        {layout === "flow" ? (
+          <div className="-mx-5 -mb-8 border-t border-zinc-200">
+            {copyOption === "goal" ? (
+              <Option3Flow embedded startAt="review" />
+            ) : copyOption === "constraint" ? (
+              <Option4Flow embedded startAt="review" />
+            ) : copyOption === "merged" ? (
+              <Option5Flow embedded startAt="review" />
+            ) : (
+              <Option6Flow embedded startAt="review" />
+            )}
+          </div>
+        ) : items.length === 0 ? (
           <p className="text-sm text-zinc-500">
             All caught up — no actions waiting.
           </p>
@@ -516,7 +532,13 @@ export default function ChannelSummaryDrawer({
         )}
       </div>
 
-      {items.length > 0 && (
+      {/*
+        Flow options (3 to 6) render their own approve and reject controls over
+        their own state. The drawer's footer acts on the channel item list, so
+        showing it alongside them duplicated the buttons AND offered a control
+        that resolved different state than the cards on screen.
+      */}
+      {items.length > 0 && layout !== "flow" && (
         <div className="sticky bottom-0 -mx-6 -mb-5 mt-auto flex flex-col gap-3 border-t border-zinc-200 bg-white px-6 py-4">
           {confirmingAll && (
             <p className="text-sm font-medium text-zinc-700">

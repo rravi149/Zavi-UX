@@ -47,6 +47,7 @@ import {
   applyCopy,
   channelHeadline,
   copyOptions,
+  cardCopyOption,
   metaItemCopy,
   type CopyOptionId,
 } from "./plainCopy";
@@ -788,6 +789,8 @@ export default function ChannelPanel({
       ),
   );
   const [expanded, setExpanded] = useState<string | null>(null);
+  /** Two-step confirm for the compact meta rows. Holds the item id awaiting a second click. */
+  const [armedId, setArmedId] = useState<number | null>(null);
   const [showLocked, setShowLocked] = useState(true);
   const [dragId, setDragId] = useState<string | null>(null);
   const [overId, setOverId] = useState<string | null>(null);
@@ -838,7 +841,7 @@ export default function ChannelPanel({
     const items = staticItems[channel.id] ?? [];
     if (channel.id === "meta-ads") {
       return items.map((item) =>
-        applyCopy(item, metaItemCopy[copyOption][item.id]),
+        applyCopy(item, metaItemCopy[cardCopyOption(copyOption)][item.id]),
       );
     }
     return items;
@@ -1289,6 +1292,15 @@ export default function ChannelPanel({
                                 <button
                                   type="button"
                                   onClick={() => {
+                                    // This compact row used to apply a live ad-spend
+                                    // change on a single click, with no confirm step,
+                                    // while the same option's drawer confirmed properly.
+                                    // First click now arms, second click applies.
+                                    if (armedId !== item.id) {
+                                      setArmedId(item.id);
+                                      return;
+                                    }
+                                    setArmedId(null);
                                     if (item.taskId !== undefined) {
                                       onApply(item.taskId);
                                     } else {
@@ -1296,10 +1308,16 @@ export default function ChannelPanel({
                                     }
                                     notify("approve", item.title);
                                   }}
-                                  className="flex h-10 flex-1 cursor-pointer items-center justify-center gap-1.5 rounded-lg bg-zinc-900 px-3 text-sm font-semibold text-white transition-colors duration-200 hover:bg-zinc-700"
+                                  className={`flex h-10 flex-1 cursor-pointer items-center justify-center gap-1.5 rounded-lg px-3 text-sm font-semibold text-white transition-colors duration-200 ${
+                                    armedId === item.id
+                                      ? "bg-emerald-700 hover:bg-emerald-800"
+                                      : "bg-zinc-900 hover:bg-zinc-700"
+                                  }`}
                                 >
                                   <Check className="h-4 w-4" aria-hidden="true" />
-                                  {item.review.actionLabel ?? "Approve"}
+                                  {armedId === item.id
+                                    ? "Tap again to confirm"
+                                    : (item.review.actionLabel ?? "Approve")}
                                 </button>
                                 <button
                                   type="button"
@@ -1496,7 +1514,7 @@ export default function ChannelPanel({
               viewAllChannel.id === "meta-ads" && viewAllChannel.summary
                 ? {
                     ...viewAllChannel.summary,
-                    headline: channelHeadline[copyOption],
+                    headline: channelHeadline[cardCopyOption(copyOption)],
                   }
                 : viewAllChannel.summary
             }

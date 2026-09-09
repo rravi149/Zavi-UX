@@ -62,3 +62,138 @@ body {
   from { opacity: 0; transform: scale(0.85); }
   to { opacity: 1; transform: scale(1); }
 }
+
+/* ---------------------------------------------------------------------------
+   Growth plan panel: three color treatments, switched in the panel header.
+   Color is never decoration here; each option encodes something different.
+     paper  = no color. Neutral control.
+     signal = color IS data state: readable / unreadable / not connected,
+              plus one violet reserved for "this is waiting on your decision".
+     fleet  = color IS the channel. Platform brand colors bleed out of the
+              channel rows; every decision stays black and white.
+--------------------------------------------------------------------------- */
+
+[data-gp-theme] {
+  --gp-page: #ffffff;
+  --gp-ink: #18181b;
+  --gp-ink-soft: #52525b;
+  --gp-ink-mute: #a1a1aa;
+  --gp-line: #f0f0f0;
+  --gp-line-strong: #e4e4e7;
+
+  /* Hero */
+  --gp-hero-bg: linear-gradient(to bottom right, #fafafa, #ffffff);
+  --gp-hero-border: #e4e4e7;
+  --gp-hero-ink: #18181b;
+  --gp-hero-ink-soft: #52525b;
+  --gp-hero-ink-mute: #a1a1aa;
+  --gp-hero-rule: #e4e4e7;
+
+  /* Data state */
+  --gp-measured: #059669;
+  --gp-unreadable: #b45309;
+  --gp-none: #a1a1aa;
+  --gp-track: #f4f4f5;
+
+  /* Decision */
+  --gp-decide: #18181b;
+  --gp-decide-ink: #ffffff;
+  --gp-decide-quiet: #52525b;
+  /* The same decision, sitting ON the hero, which may be a dark field. */
+  --gp-hero-decide: #18181b;
+  --gp-hero-decide-ink: #ffffff;
+  --gp-chip: #18181b;
+  --gp-chip-ink: #ffffff;
+
+  --gp-head-icon: #a1a1aa;
+  --gp-table-head: #fafafa;
+  --gp-row-edge: transparent;
+  --gp-working-bg: #ffffff;
+  --gp-working-border: #e4e4e7;
+}
+
+[data-gp-theme="signal"] {
+  --gp-page: #ffffff;
+  --gp-ink: #101828;
+  --gp-ink-soft: #475467;
+  --gp-ink-mute: #98a2b3;
+  --gp-line: #eef1f4;
+  --gp-line-strong: #dfe4ea;
+
+  --gp-hero-bg: linear-gradient(150deg, #0e3b43 0%, #124e5a 55%, #10424c 100%);
+  --gp-hero-border: #0e3b43;
+  --gp-hero-ink: #ffffff;
+  --gp-hero-ink-soft: #bfe0e2;
+  --gp-hero-ink-mute: #8fbcc1;
+  --gp-hero-rule: rgba(255, 255, 255, 0.22);
+
+  --gp-measured: #0f8a6b;
+  --gp-unreadable: #a85b00;
+  --gp-none: #7a8794;
+  --gp-track: #e7edf1;
+
+  --gp-decide: #6d28d9;
+  --gp-decide-ink: #ffffff;
+  --gp-decide-quiet: #6d28d9;
+  /* Violet on pine-teal is two dark colors fighting: the one action on the
+     hero goes white-on-teal, and the chip lifts to a violet that survives it. */
+  --gp-hero-decide: #ffffff;
+  --gp-hero-decide-ink: #0e3b43;
+  --gp-chip: #a78bfa;
+  --gp-chip-ink: #2e1065;
+
+  --gp-head-icon: #0e3b43;
+  --gp-table-head: #f2f7f8;
+  --gp-row-edge: transparent;
+  --gp-working-bg: #f4f9f9;
+  --gp-working-border: #cfe3e5;
+}
+
+[data-gp-theme="fleet"] {
+  --gp-page: #f6f7f9;
+  --gp-ink: #14161a;
+  --gp-ink-soft: #4b5159;
+  --gp-ink-mute: #939aa4;
+  --gp-line: #e8eaee;
+  --gp-line-strong: #dcdfe5;
+
+  --gp-hero-bg: #ffffff;
+  --gp-hero-border: #14161a;
+  --gp-hero-ink: #14161a;
+  --gp-hero-ink-soft: #4b5159;
+  --gp-hero-ink-mute: #939aa4;
+  --gp-hero-rule: #e8eaee;
+
+  --gp-measured: #14161a;
+  --gp-unreadable: #939aa4;
+  --gp-none: #c3c8d0;
+  --gp-track: #e8eaee;
+
+  --gp-decide: #14161a;
+  --gp-decide-ink: #ffffff;
+  --gp-decide-quiet: #14161a;
+  --gp-hero-decide: #14161a;
+  --gp-hero-decide-ink: #ffffff;
+  --gp-chip: #14161a;
+  --gp-chip-ink: #ffffff;
+
+  --gp-head-icon: #14161a;
+  --gp-table-head: #ffffff;
+  --gp-row-edge: var(--gp-channel, transparent);
+  --gp-working-bg: #ffffff;
+  --gp-working-border: #14161a;
+}
+
+/* The channel mosaic. Only Fleet shows it. It is that option's whole idea. */
+.gp-mosaic {
+  background: linear-gradient(
+    to right,
+    #0064e0 0 18%,
+    #4285f4 18% 32%,
+    #ff4500 32% 48%,
+    #ff0000 48% 62%,
+    #0a66c2 62% 74%,
+    #0f8a6b 74% 88%,
+    #14161a 88% 100%
+  );
+}

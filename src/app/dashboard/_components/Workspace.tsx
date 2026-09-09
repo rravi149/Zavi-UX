@@ -24,6 +24,7 @@ import {
   applyRequestCopy,
   metaItemCopy,
   metaItemIdFromKey,
+  cardCopyOption,
   type CopyOptionId,
 } from "./plainCopy";
 import OnboardingDrawer from "./OnboardingDrawer";
@@ -187,7 +188,7 @@ export default function Workspace() {
   const [plan, setPlan] = useState<Plan>("free");
   const [approval, setApproval] = useState<ApprovalRequest | null>(null);
   const [approvalExpanded, setApprovalExpanded] = useState(true);
-  const [copyOption, setCopyOption] = useState<CopyOptionId>("direct");
+  const [copyOption, setCopyOption] = useState<CopyOptionId>("option1plus");
   const [brainOpen, setBrainOpen] = useState(false);
   const [settings, setSettings] = useState<{
     section?: SettingsSection;
@@ -628,7 +629,14 @@ export default function Workspace() {
         );
       case "growthPlan":
         return (
-          <GrowthPlanPanel onOpenGoals={() => setDrawer("goals")} />
+          <GrowthPlanPanel
+            onOpenGoals={() => setDrawer("goals")}
+            onDiscuss={() => {
+              // The chat is the co-equal surface next to the plan, so
+              // "discuss" puts the cursor in it rather than opening anything.
+              document.getElementById("growth-chat-input")?.focus();
+            }}
+          />
         );
       case "growthChat":
         return (
@@ -796,7 +804,7 @@ export default function Workspace() {
               approval,
               metaItemIdFromKey(approval.key) === null
                 ? undefined
-                : metaItemCopy[copyOption][
+                : metaItemCopy[cardCopyOption(copyOption)][
                     metaItemIdFromKey(approval.key) as number
                   ],
             )}
