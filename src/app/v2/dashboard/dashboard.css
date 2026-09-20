@@ -1,0 +1,378 @@
+/* ============================================================
+   V2 dashboard, extra rules.
+
+   Ported from the EXTRA_CSS blocks in the vanilla wireframe
+   (parts/30-console.js:7-44 and parts/50-commerce.js:7-34). Every selector is
+   scoped under `.v2` AND carries the `d-` prefix, so nothing here can reach a
+   element the dashboard did not render. Layout primitives it builds on
+   (.sect, .row, .blind, .panel, .grid2, .rail-layout, .btn, .chip, .sheet)
+   live in ../v2.css and are not redefined.
+   ============================================================ */
+
+/* The console's two-column body: a tighter section rail than the marketing
+   pages, because a rail block sits beside it. */
+.v2 .d-main .sect {
+  grid-template-columns: 142px 1fr;
+  gap: 26px;
+  padding: 28px 0;
+}
+.v2 .d-main .sect-rail {
+  top: 158px;
+}
+.v2 .d-main .sect-label {
+  font-size: 17px;
+}
+
+/* right rail */
+.v2 .d-rail {
+  position: sticky;
+  top: 158px;
+  align-self: start;
+  border-left: 1px solid var(--rule);
+  padding-left: 22px;
+}
+.v2 .d-rail-blk {
+  padding: 16px 0;
+  border-top: 1px solid var(--rule-soft);
+}
+.v2 .d-rail-blk:first-child {
+  border-top: none;
+  padding-top: 0;
+}
+.v2 .d-rail-h {
+  font-family: var(--mono);
+  font-size: 10px;
+  letter-spacing: 0.09em;
+  text-transform: uppercase;
+  color: var(--ink-3);
+  margin: 0 0 9px;
+}
+.v2 .d-rail-note {
+  font-size: 12.5px;
+  color: var(--ink-3);
+  margin: 9px 0 0;
+}
+.v2 .d-rail-lede {
+  font-size: 13px;
+  line-height: 1.5;
+  color: var(--ink-2);
+  margin: 0;
+}
+
+/* a run card */
+.v2 .d-run {
+  border: 1px solid var(--rule);
+  background: var(--panel);
+  padding: 15px 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+.v2 .d-run h3 {
+  margin: 0;
+  font-size: 15.5px;
+  font-weight: 600;
+  letter-spacing: -0.01em;
+}
+.v2 .d-run p {
+  margin: 0;
+  font-size: 13.5px;
+  line-height: 1.5;
+  color: var(--ink-2);
+}
+.v2 .d-foot {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-top: 2px;
+  flex-wrap: wrap;
+}
+.v2 .d-spec {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  gap: 2px 12px;
+  font-size: 12.5px;
+  color: var(--ink-3);
+  margin: 0;
+}
+.v2 .d-spec dt {
+  font-family: var(--mono);
+  font-size: 10px;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  padding-top: 2px;
+}
+.v2 .d-spec dd {
+  margin: 0;
+  color: var(--ink-2);
+}
+.v2 .d-out {
+  border-top: 1px solid var(--rule-soft);
+  padding-top: 9px;
+  font-size: 13px;
+  color: var(--ink-2);
+}
+.v2 .d-out .d-err {
+  color: var(--rust);
+  font-weight: 600;
+}
+.v2 .d-act {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  gap: 3px 10px;
+  margin: 7px 0 0;
+  font-size: 13px;
+}
+.v2 .d-act dt {
+  font-family: var(--mono);
+  font-size: 9.5px;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--ink-3);
+  padding-top: 3px;
+  white-space: nowrap;
+}
+.v2 .d-act dd {
+  margin: 0;
+}
+
+/* a connector line in the rail */
+.v2 .d-conn {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 7px 0;
+  border-bottom: 1px solid var(--rule-soft);
+}
+.v2 .d-conn:last-child {
+  border-bottom: none;
+}
+.v2 .d-conn-n {
+  flex: 1;
+  min-width: 0;
+  font-size: 13.5px;
+}
+.v2 .d-conn-n span {
+  display: block;
+  font-size: 12px;
+  color: var(--ink-3);
+  line-height: 1.4;
+}
+
+/* code + tool list */
+.v2 .d-code {
+  font-family: var(--mono);
+  font-size: 11px;
+  text-transform: none;
+  letter-spacing: 0;
+  color: var(--ink);
+  background: rgba(14, 15, 17, 0.045);
+  border: 1px solid var(--rule-soft);
+  padding: 7px 9px;
+  display: block;
+  overflow-x: auto;
+  white-space: pre;
+  margin: 5px 0 0;
+}
+.v2 .d-cline {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  gap: 14px;
+  align-items: center;
+  margin-bottom: 6px;
+}
+.v2 .d-tools {
+  list-style: none;
+  margin: 8px 0 0;
+  padding: 0;
+}
+.v2 .d-tools li {
+  display: grid;
+  grid-template-columns: 190px 1fr;
+  gap: 10px;
+  padding: 4px 0;
+  border-bottom: 1px solid var(--rule-soft);
+  font-size: 12.5px;
+  color: var(--ink-2);
+}
+.v2 .d-tools li:last-child {
+  border-bottom: none;
+}
+.v2 .d-tools code {
+  font-family: var(--mono);
+  font-size: 11px;
+  color: var(--ink);
+}
+
+/* goals */
+.v2 .d-form {
+  display: grid;
+  grid-template-columns: 1fr 130px auto;
+  gap: 10px;
+  align-items: end;
+  margin-top: 12px;
+}
+.v2 .d-goal {
+  display: grid;
+  grid-template-columns: 1fr auto auto;
+  gap: 14px;
+  align-items: baseline;
+  padding: 13px 0;
+  border-bottom: 1px solid var(--rule-soft);
+}
+.v2 .d-goal:last-of-type {
+  border-bottom: none;
+}
+.v2 .d-goal b {
+  font-weight: 600;
+  font-size: 15px;
+}
+.v2 .d-goal em {
+  font-style: normal;
+  color: var(--ink-3);
+  font-size: 12.5px;
+  display: block;
+  margin-top: 3px;
+}
+
+/* two-column key lists */
+.v2 .d-cols {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 20px 36px;
+  margin: 2px 0 4px;
+}
+.v2 .d-cols h4 {
+  margin: 0 0 6px;
+  font-family: var(--mono);
+  font-size: 10px;
+  letter-spacing: 0.09em;
+  text-transform: uppercase;
+  color: var(--ink-3);
+  font-weight: 600;
+}
+.v2 .d-kv {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+.v2 .d-kv li {
+  font-size: 13.5px;
+  padding: 5px 0;
+  border-bottom: 1px solid var(--rule-soft);
+  color: var(--ink);
+}
+.v2 .d-kv li:last-child {
+  border-bottom: none;
+}
+.v2 .d-kv .k {
+  color: var(--ink-3);
+}
+.v2 .d-fig {
+  font-family: var(--mono);
+  font-size: 13px;
+  color: var(--ink);
+  text-transform: none;
+  letter-spacing: 0.02em;
+}
+
+/* the tier picker */
+.v2 .d-pick {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 0;
+  border: 1px solid var(--rule);
+  margin: 0 0 18px;
+}
+.v2 .d-pick > div {
+  padding: 14px;
+  border-right: 1px solid var(--rule);
+}
+.v2 .d-pick > div:last-child {
+  border-right: none;
+}
+.v2 .d-pick .nm {
+  font-weight: 600;
+  font-size: 15px;
+}
+.v2 .d-pick .pr {
+  font-family: var(--mono);
+  font-size: 12px;
+  color: var(--ink-3);
+  margin: 2px 0 10px;
+  text-transform: none;
+  letter-spacing: 0.02em;
+}
+.v2 .d-pick .cur {
+  outline: 1px solid var(--ink);
+  outline-offset: -1px;
+  background: rgba(14, 15, 17, 0.035);
+}
+
+/* a meter */
+.v2 .d-meter {
+  font-family: var(--mono);
+  font-size: 11px;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--ink-3);
+}
+.v2 .d-bar {
+  height: 3px;
+  background: var(--rule);
+  margin: 7px 0 0;
+  position: relative;
+}
+.v2 .d-bar i {
+  position: absolute;
+  left: 0;
+  top: 0;
+  bottom: 0;
+  background: var(--ink);
+}
+.v2 .d-bar.low i {
+  background: var(--rust);
+}
+
+/* the flash the next-action bar and the usage panel both use */
+.v2 .d-flash {
+  outline: 2px solid var(--rust);
+  outline-offset: 3px;
+}
+
+/* the seam: a tab another agent has not filled in yet */
+.v2 .d-seam {
+  border: 1px dashed var(--rule);
+  padding: 22px;
+  font-size: 14px;
+  color: var(--ink-2);
+}
+.v2 .d-seam h2 {
+  margin: 0 0 8px;
+  font-size: 19px;
+  font-weight: 650;
+  letter-spacing: -0.015em;
+  color: var(--ink);
+}
+
+@media (max-width: 1100px) {
+  .v2 .d-rail {
+    position: static;
+    border-left: none;
+    padding-left: 0;
+    border-top: 1px solid var(--rule);
+    padding-top: 20px;
+  }
+  .v2 .d-form {
+    grid-template-columns: 1fr;
+  }
+  .v2 .d-cols {
+    grid-template-columns: 1fr;
+  }
+  .v2 .d-pick {
+    grid-template-columns: 1fr 1fr;
+  }
+  .v2 .d-tools li {
+    grid-template-columns: 1fr;
+  }
+}
