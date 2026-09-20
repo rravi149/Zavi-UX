@@ -383,3 +383,241 @@
   border-left-color: var(--ok);
   background: transparent;
 }
+
+/* ============================================================
+   The three channel screens.
+
+   Ported from the EXTRA_CSS block in parts/40-channels.js:8-39, renamed from
+   the `c40-` prefix to `d-` so every dashboard selector reads the same way.
+   `.d-bar` above is the usage meter and is NOT this; the action card's button
+   row is `.d-actbar`.
+   ============================================================ */
+
+/* the channel / run switcher */
+.v2 .d-switch {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 7px;
+  margin: 0 0 26px;
+  padding-bottom: 18px;
+  border-bottom: 1px solid var(--rule);
+}
+
+/* a title row with a control pushed to the far edge */
+.v2 .d-head {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 16px;
+  flex-wrap: wrap;
+}
+
+/* Overview / Settings */
+.v2 .d-tabs {
+  display: flex;
+  gap: 2px;
+  border-bottom: 1px solid var(--rule);
+  margin: 24px 0 0;
+}
+.v2 .d-tab {
+  font-family: var(--sans);
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--ink-3);
+  background: none;
+  border: none;
+  border-bottom: 2px solid transparent;
+  padding: 9px 14px;
+  margin-bottom: -1px;
+  cursor: pointer;
+}
+.v2 .d-tab.on {
+  color: var(--ink);
+  font-weight: 650;
+  border-bottom-color: var(--ink);
+}
+.v2 .d-pill {
+  display: inline-block;
+  margin-left: 7px;
+  font-family: var(--mono);
+  font-size: 10px;
+  border: 1px solid var(--rule);
+  padding: 1px 5px;
+}
+
+/* the one headline figure on a run */
+.v2 .d-fig {
+  display: flex;
+  align-items: baseline;
+  gap: 16px;
+  padding: 6px 0 2px;
+}
+.v2 .d-fig > b {
+  font-size: 46px;
+  font-weight: 650;
+  letter-spacing: -0.035em;
+  line-height: 1;
+  font-variant-numeric: tabular-nums;
+}
+.v2 .d-fig .u {
+  font-size: 17px;
+  font-weight: 550;
+  color: var(--ink-3);
+  margin-left: 3px;
+}
+.v2 .d-fig .cx {
+  font-size: 14px;
+  line-height: 1.5;
+  color: var(--ink-2);
+  max-width: 460px;
+}
+.v2 .d-fig .cx b {
+  font-size: 14px;
+  font-weight: 600;
+  letter-spacing: 0;
+  color: var(--ink);
+}
+
+/* headline numbers on a channel */
+.v2 .d-nums {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 1px;
+  background: var(--rule);
+  border: 1px solid var(--rule);
+  margin-top: 4px;
+}
+.v2 .d-num {
+  background: var(--panel);
+  padding: 14px 16px;
+}
+.v2 .d-num .v {
+  font-size: 25px;
+  font-weight: 650;
+  letter-spacing: -0.02em;
+  font-variant-numeric: tabular-nums;
+  line-height: 1.1;
+}
+
+/* one action card */
+.v2 .d-act {
+  border: 1px solid var(--rule);
+  background: var(--panel);
+  padding: 16px 18px;
+  margin-bottom: 10px;
+}
+.v2 .d-act.settled {
+  background: transparent;
+  border-color: var(--rule-soft);
+}
+.v2 .d-act h4 {
+  margin: 0;
+  font-size: 15.5px;
+  font-weight: 600;
+  letter-spacing: -0.008em;
+}
+.v2 .d-act .bd {
+  margin: 7px 0 0;
+  font-size: 14px;
+  line-height: 1.6;
+  color: var(--ink-2);
+}
+.v2 .d-act .ev {
+  margin: 11px 0 0;
+  padding: 9px 11px;
+  border-left: 1px solid var(--rule);
+  background: rgba(14, 15, 17, 0.015);
+}
+.v2 .d-act .ev ul {
+  margin: 0;
+  padding: 0;
+}
+.v2 .d-act .ev li {
+  font-family: var(--mono);
+  font-size: 10.5px;
+  letter-spacing: 0.03em;
+  text-transform: none;
+  color: var(--ink-3);
+  list-style: none;
+  margin-bottom: 4px;
+  line-height: 1.55;
+}
+.v2 .d-act .dl {
+  margin-top: 11px;
+  border: 1px solid var(--rule-soft);
+  padding: 11px 13px;
+  white-space: pre-wrap;
+  font-family: var(--mono);
+  font-size: 11.5px;
+  text-transform: none;
+  letter-spacing: 0;
+  line-height: 1.7;
+  color: var(--ink-2);
+}
+
+/* the button row under an action, a facts table or an empty state */
+.v2 .d-actbar {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 7px;
+  align-items: center;
+  margin-top: 13px;
+}
+
+/* the editor a deliverable opens into */
+.v2 .d-ta {
+  font-family: var(--mono);
+  font-size: 11.5px;
+  line-height: 1.7;
+  min-height: 140px;
+  text-transform: none;
+  letter-spacing: 0;
+}
+
+/* an empty action list, which has five causes and not two */
+.v2 .d-emptybox {
+  border: 1px solid var(--rule);
+  background: var(--panel);
+  padding: 18px 20px;
+}
+.v2 .d-emptybox p {
+  margin: 0 0 8px;
+  font-size: 14px;
+  line-height: 1.55;
+}
+.v2 .d-emptybox p:last-of-type {
+  margin-bottom: 0;
+}
+
+/* a locked row: still in the list, still unopenable */
+.v2 .d-lockrow {
+  opacity: 0.62;
+}
+
+/* the small grey line this family of screens uses for a caveat under a block */
+.v2 .d-note {
+  font-size: 12.5px;
+  line-height: 1.55;
+  color: var(--ink-3);
+  margin: 10px 0 0;
+}
+
+/* an inline identifier: mono, but lower case, because a field name that has
+   been upper-cased is no longer the field name */
+.v2 .d-tok {
+  font-family: var(--mono);
+  font-size: 11px;
+  letter-spacing: 0.02em;
+  text-transform: none;
+  color: var(--ink-2);
+}
+
+@media (max-width: 760px) {
+  .v2 .d-nums {
+    grid-template-columns: 1fr;
+  }
+  .v2 .d-fig {
+    flex-direction: column;
+    gap: 6px;
+  }
+}
