@@ -376,3 +376,10 @@
     grid-template-columns: 1fr;
   }
 }
+
+/* A blind spot whose connector is now linked. Same block, no alarm colour:
+   it is a closed item in the list, not a warning. */
+.v2 .d-closed .blind {
+  border-left-color: var(--ok);
+  background: transparent;
+}

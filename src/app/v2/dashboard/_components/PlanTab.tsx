@@ -421,10 +421,14 @@ function GoalRow({ g, onRemove }: { g: Goal; onRemove: () => void }) {
     g.dataSource ? `data source: ${g.dataSource}` : null,
   ].filter(Boolean) as string[];
 
+  /* Never "undefined of undefined": a goal with no target says so, and a goal
+     with a target but no reading says which half is missing. */
   const progress =
     g.target_value == null
       ? "no target set"
-      : `${g.current_value == null ? "no value yet" : n(g.current_value)} of ${n(g.target_value)}`;
+      : g.current_value == null
+        ? `target ${n(g.target_value)}, nothing measured yet`
+        : `${n(g.current_value)} of ${n(g.target_value)}`;
 
   return (
     <div className="d-goal">

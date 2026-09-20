@@ -297,6 +297,11 @@ export function HomeTab({ state, setState, toast, go }: TabProps) {
   const na = nextAction(state);
   const spent = FREE_DAILY - state.creditsDay;
 
+  /* Counted from state, so the sentence cannot outlive the thing it counts. */
+  const stillOpen = BLIND.filter((b) => !b.conn || connState(state, b.conn) !== "connected").length;
+  const closable = BLIND.filter((b) => b.conn).length;
+  const blindFraming = `${BLIND.length} things a workspace like this can be blind to. ${stillOpen} are open right now. ${closable} have a connector on this page that closes them, ${BLIND.length - closable} do not, and those two say what runs instead.`;
+
   /* One click opens the approval. Nothing is linked until it is confirmed in
      Settings, which is the second click. */
   function connect(key: ConnectorKey) {
@@ -414,7 +419,7 @@ export function HomeTab({ state, setState, toast, go }: TabProps) {
       <Section
         num="02"
         label="What Zavi cannot see yet"
-        framing="Seven things this workspace is blind to right now. Five have a connector on this page that closes them. Two do not, and say what runs instead."
+        framing={blindFraming}
         id="d-blind"
       >
         {BLIND.map((b) => (
@@ -738,7 +743,7 @@ function RunCard({
                   <b>{a.title}</b>
                   <br />
                   <span className="muted">
-                    impact {a.impact} of 5. {a.impact_reason}.
+                    impact {a.impact} of 5. {a.impact_reason.replace(/\.$/, "")}.
                   </span>
                 </dd>
               </dl>
@@ -784,6 +789,9 @@ function BlindRow({
   onWhy: (msg: string) => void;
 }) {
   const st = b.conn ? connState(state, b.conn) : null;
+  const spec = b.conn ? connectorSpec(b.conn) : null;
+  const closed = st === "connected";
+
   let action: ReactNode;
   if (!b.conn) {
     action = (
@@ -792,22 +800,38 @@ function BlindRow({
       </Btn>
     );
   } else if (st === "none") {
-    action = <Btn sm onClick={() => onConnect(b.conn as ConnectorKey)}>Connect {connectorSpec(b.conn).label}</Btn>;
+    action = (
+      <Btn sm onClick={() => onConnect(b.conn as ConnectorKey)}>
+        Connect {spec?.label}
+      </Btn>
+    );
   } else {
     action = connChip(st as ConnState);
   }
 
+  /* A row whose connector is linked is no longer a blind spot, and it must stop
+     saying it is. Leaving the original sentence under a Connected chip is the
+     exact contradiction this panel exists to avoid. */
+  const why = closed
+    ? `Closed. ${spec?.label} is linked, so this is read rather than guessed.`
+    : st === "pending"
+      ? `${spec?.label} has an approval open. Nothing reads the account until you finish it in Settings.`
+      : b.why;
+  const impact = closed ? `${spec?.unlocks}.` : b.impact;
+
   return (
-    <Blind
-      what={b.what}
-      why={b.why}
-      impact={b.impact}
-      action={
-        <>
-          <div className="d-foot">{action}</div>
-          <div className="src mono">{b.src}</div>
-        </>
-      }
-    />
+    <div className={closed ? "d-closed" : undefined}>
+      <Blind
+        what={b.what}
+        why={why}
+        impact={impact}
+        action={
+          <>
+            <div className="d-foot">{action}</div>
+            <div className="src mono">{b.src}</div>
+          </>
+        }
+      />
+    </div>
   );
 }
